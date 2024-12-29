@@ -5,7 +5,7 @@ using namespace iol;
 
 int main(int argc, char* argv[])
 {
-	static EngineParams params;
+	EngineParams params;
 	params.argc = argc;
 	params.argv = argv;
 	params.windowTitle = "Test App";

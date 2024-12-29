@@ -9,7 +9,7 @@ namespace iol
 {
 	void GameApplication::Create(const EngineParams& params)
 	{
-		GraphicsSystem& g = *m_graphicsSystem;
+		GraphicsSystem* g = m_graphicsSystem;
 
 		//**********************************
 		// Create Camera
@@ -35,9 +35,9 @@ namespace iol
 		//**********************************
 
 #if VERTEX_DATA_TYPE_POS != 0 && VERTEX_DATA_TYPE_UV != 0
-		m_shader = g.CreateShaderFromFile("res/shader/basic_mvp_texture.glsl");
+		m_shader = g->CreateShaderFromFile("res/shader/basic_mvp_texture.glsl");
 #elif VERTEX_DATA_TYPE_POS != 0
-		m_shader = g.CreateShaderFromFile("res/shader/basic_mvp.glsl");
+		m_shader = g->CreateShaderFromFile("res/shader/basic_mvp.glsl");
 #endif
 
 		VertexAttributeParam attributes[] = {
@@ -49,7 +49,7 @@ namespace iol
 #endif
 		};
 
-		m_vertexLayout = g.CreateVertexLayout(m_shader, attributes, iol_countof(attributes));
+		m_vertexLayout = g->CreateVertexLayout(m_shader, attributes, iol_countof(attributes));
 
 		//**********************************
 		// Create PipelineState
@@ -64,7 +64,7 @@ namespace iol
 			pipelineParam.pShader = m_shader;
 			pipelineParam.pVertexLayout = m_vertexLayout;
 			pipelineParam.blendMode = BlendMode::None;
-			m_pipelineStates.PushBack(g.CreatePipelineState(pipelineParam));
+			m_pipelineStates.PushBack(g->CreatePipelineState(pipelineParam));
 		}
 
 		{
@@ -76,7 +76,7 @@ namespace iol
 			pipelineParam.blendMode = BlendMode::None;
 			pipelineParam.rasterizerFlags &= ~RasterizerFlags_BackFaceCulling;
 			pipelineParam.rasterizerFlags |= RasterizerFlags_WireFrame;
-			m_pipelineStates.PushBack(g.CreatePipelineState(pipelineParam));
+			m_pipelineStates.PushBack(g->CreatePipelineState(pipelineParam));
 		}
 
 		{
@@ -88,7 +88,7 @@ namespace iol
 			pipelineParam.blendMode = BlendMode::None;
 			pipelineParam.rasterizerFlags &= ~RasterizerFlags_BackFaceCulling;
 			pipelineParam.rasterizerFlags |= RasterizerFlags_WireFrame;
-			m_pipelineStates.PushBack(g.CreatePipelineState(pipelineParam));
+			m_pipelineStates.PushBack(g->CreatePipelineState(pipelineParam));
 		}
 
 		m_currentPipelineStateIndex = 0;
@@ -97,7 +97,7 @@ namespace iol
 		// Create UniformBuffer
 		//**********************************
 
-		m_uniformBuffer = g.CreateUniformBuffer(&m_uniformData, sizeof(m_uniformData), BufferUsage::DynamicDraw, "UB_matrices");
+		m_uniformBuffer = g->CreateUniformBuffer(&m_uniformData, sizeof(m_uniformData), BufferUsage::DynamicDraw, "UB_matrices");
 
 		//**********************************
 		// Load Mesh
@@ -127,12 +127,12 @@ namespace iol
 #endif
 		}
 
-		m_vertexBuffer = g.CreateVertexBuffer(vertices, sizeof(*vertices) * vertexCount, BufferUsage::DynamicDraw);
-		m_indexBuffer = g.CreateIndexBuffer(m_mesh.indices.pData, m_mesh.GetIndexCount(), BufferUsage::DynamicDraw);
+		m_vertexBuffer = g->CreateVertexBuffer(vertices, sizeof(*vertices) * vertexCount, BufferUsage::DynamicDraw);
+		m_indexBuffer = g->CreateIndexBuffer(m_mesh.indices.pData, m_mesh.GetIndexCount(), BufferUsage::DynamicDraw);
 
 		iol_free(vertices);
 
-		m_vertexArray = g.CreateVertexArray(m_vertexLayout, (const VertexBuffer**)&m_vertexBuffer, 1, m_indexBuffer);
+		m_vertexArray = g->CreateVertexArray(m_vertexLayout, (const VertexBuffer**)&m_vertexBuffer, 1, m_indexBuffer);
 
 		//**********************************
 		// Load Texture
@@ -142,7 +142,7 @@ namespace iol
 		texParam.filter = TextureFilter::LinearMipMapLinear;
 		texParam.format = TextureFormat::RGBA;
 		texParam.genMipMaps = true;
-		m_texture = g.CreateTextureFromFile("res/texture/prototype_black.png", texParam);
+		m_texture = g->CreateTextureFromFile("res/texture/prototype_black.png", texParam);
 	}
 
 	void GameApplication::Destroy()
@@ -150,18 +150,18 @@ namespace iol
 		delete m_cameraFlying;
 		delete m_camera;
 
-		GraphicsSystem& g = *m_graphicsSystem;
+		GraphicsSystem* g = m_graphicsSystem;
 		
 		for (size_t i = 0; i < m_pipelineStates.count; i++)
-			g.DestroyPipelineState(m_pipelineStates[i]);
+			g->DestroyPipelineState(m_pipelineStates[i]);
 
-		g.DestroyUniformBuffer(m_uniformBuffer);
-		g.DestroyShader(m_shader);
-		g.DestroyVertexLayout(m_vertexLayout);
-		g.DestroyVertexBuffer(m_vertexBuffer);
-		g.DestroyIndexBuffer(m_indexBuffer);
-		g.DestroyVertexArray(m_vertexArray);
-		g.DestroyTexture(m_texture);
+		g->DestroyUniformBuffer(m_uniformBuffer);
+		g->DestroyShader(m_shader);
+		g->DestroyVertexLayout(m_vertexLayout);
+		g->DestroyVertexBuffer(m_vertexBuffer);
+		g->DestroyIndexBuffer(m_indexBuffer);
+		g->DestroyVertexArray(m_vertexArray);
+		g->DestroyTexture(m_texture);
 	}
 
 	void GameApplication::Update(float deltaTime)
@@ -192,7 +192,7 @@ namespace iol
 
 	void GameApplication::Render(float deltaTime)
 	{
-		GraphicsSystem& g = *m_graphicsSystem;
+		GraphicsSystem* g = m_graphicsSystem;
 
 		if (input_GetKeyState(IOL_SCANCODE_TAB) == KeyState_Pressed)
 		{
@@ -201,26 +201,26 @@ namespace iol
 
 		mat4 viewProj = m_camera->GetViewProjectionMatrix();
 		m_uniformData.mvp = viewProj;
-		g.SetUniformBufferData(m_uniformBuffer, &m_uniformData, sizeof(m_uniformData));
+		g->SetUniformBufferData(m_uniformBuffer, &m_uniformData, sizeof(m_uniformData));
 
-		g.BeginRender(m_pipelineStates[m_currentPipelineStateIndex]);
-		g.SetViewportFullscreen();
-		g.Clear(vec4(0.0f, 0.0f, 0.0f, 1.0f), ClearFlags_All);
+		g->BeginRender(m_pipelineStates[m_currentPipelineStateIndex]);
+		g->SetViewportFullscreen();
+		g->Clear(vec4(0.0f, 0.0f, 0.0f, 1.0f), ClearFlags_All);
 
 		const UniformBuffer* ubs[] = { m_uniformBuffer };
-		g.BindUniformBuffer(ubs, iol_countof(ubs));
-		g.BindVertexArray(m_vertexArray);
-		g.BindTexture(0, (const Texture**)&m_texture, 1);
+		g->BindUniformBuffer(ubs, iol_countof(ubs));
+		g->BindVertexArray(m_vertexArray);
+		g->BindTexture(0, (const Texture**)&m_texture, 1);
 
-		g.DrawIndexed(g.GetIndexBufferNumIndices(m_indexBuffer));
+		g->DrawIndexed(g->GetIndexBufferNumIndices(m_indexBuffer));
 
 		// Draw second object
 		vec3 objectPos = vec3(6.0f, 0.0f, 0.0f);
 		m_uniformData.mvp = viewProj * glm::translate(mat4(1), objectPos);
-		g.SetUniformBufferData(m_uniformBuffer, &m_uniformData, sizeof(m_uniformData));
-		g.DrawIndexed(g.GetIndexBufferNumIndices(m_indexBuffer));
+		g->SetUniformBufferData(m_uniformBuffer, &m_uniformData, sizeof(m_uniformData));
+		g->DrawIndexed(g->GetIndexBufferNumIndices(m_indexBuffer));
 
-		g.EndRender();
+		g->EndRender();
 	}
 
 	void GameApplication::FixedUpdate(float deltaTime)

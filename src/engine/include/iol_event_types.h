@@ -5,9 +5,9 @@
 #include "iol_debug.h"
 #include "iol_input_definitions.h"
 
-#ifndef IOL_EVENT_CUSTOM_MAX_SIZE
+#ifndef IOL_EVENT_MAX_SIZE
 #define IOL_EVENT_MAX_SIZE 64
-#endif // IOL_EVENT_CUSTOM_MAX_SIZE
+#endif // IOL_EVENT_MAX_SIZE
 
 namespace iol
 {
