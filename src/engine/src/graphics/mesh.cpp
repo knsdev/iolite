@@ -2,8 +2,12 @@
 #include "iol_file.h"
 #include "iol_hashmap.h"
 #include "glm/gtx/rotate_vector.hpp"
+#include "glm/ext/quaternion_common.inl"
 #include <stdio.h>
 #include <string>
+
+#define DB_PERLIN_IMPL
+#include "db_perlin.hpp"
 
 using namespace glm;
 
@@ -71,7 +75,7 @@ namespace iol
 			LoadQuad();
 			break;
 		case MeshPrimitiveType::Plane:
-			LoadPlane();
+			LoadTerrain(5.0f, 5, 0.0f, 1.0f, 1.0f, 1.0f);
 			break;
 		case MeshPrimitiveType::Cube:
 			LoadCube();
@@ -98,11 +102,14 @@ namespace iol
 		positions.PushBack(vec3(s, s, 0.0f));
 		positions.PushBack(vec3(-s, s, 0.0f));
 
+		float uvMin = 0.0f;
+		float uvMax = 1.0f;
+
 		uvs.Create(4);
-		uvs.PushBack(vec2(0.0f, 0.0f));
-		uvs.PushBack(vec2(1.0f, 0.0f));
-		uvs.PushBack(vec2(1.0f, 1.0f));
-		uvs.PushBack(vec2(0.0f, 1.0f));
+		uvs.PushBack(vec2(uvMin, uvMin));
+		uvs.PushBack(vec2(uvMax, uvMin));
+		uvs.PushBack(vec2(uvMax, uvMax));
+		uvs.PushBack(vec2(uvMin, uvMax));
 
 		uint32 _indices[] = {
 			0, 1, 2,
@@ -113,8 +120,18 @@ namespace iol
 		indices.PushBackArray(_indices, iol_countof(_indices));
 	}
 
-	void Mesh::LoadPlane(float size, size_t numQuadsPerSide)
+	vec3 CalcTerrainVertexPos(float x, float z, float heightMin, float heightMax, float quadSize, float size)
 	{
+		vec3 pos = vec3(x, 0, z) * quadSize;
+		pos.y = mix(heightMin, heightMax, db::perlin(pos.x / size, pos.z / size));
+		return pos;
+	}
+
+	void Mesh::LoadTerrain(float size, size_t numQuadsPerSide, float heightMin, float heightMax, float tileX, float tileY)
+	{
+		/*
+		float perlinScale = 0.5f;
+
 		size_t numQuads = numQuadsPerSide * numQuadsPerSide;
 		float quadSize = size / numQuadsPerSide;
 
@@ -122,19 +139,32 @@ namespace iol
 		uvs.Create(4 * numQuads);
 		indices.Create(6 * numQuads);
 
+		vec3 pos;
+		float vertexHeight;
+
 		for (int32 iQuadY = 0; iQuadY < numQuadsPerSide; iQuadY++)
 		{
 			for (int32 iQuadX = 0; iQuadX < numQuadsPerSide; iQuadX++)
 			{
-				positions.PushBack(vec3(iQuadX + 1, 0, iQuadY) * quadSize);		// 1, 0
-				positions.PushBack(vec3(iQuadX, 0, iQuadY) * quadSize);			// 0, 0
-				positions.PushBack(vec3(iQuadX, 0, iQuadY + 1) * quadSize);		// 0, 1
-				positions.PushBack(vec3(iQuadX + 1, 0, iQuadY + 1) * quadSize);	// 1, 1
+				positions.PushBack(CalcTerrainVertexPos(iQuadX + 1, iQuadY, heightMin, heightMax, quadSize, size * perlinScale));      // 1, 0
+				positions.PushBack(CalcTerrainVertexPos(iQuadX, iQuadY, heightMin, heightMax, quadSize, size * perlinScale));          // 0, 0
+				positions.PushBack(CalcTerrainVertexPos(iQuadX, iQuadY + 1, heightMin, heightMax, quadSize, size * perlinScale));      // 0, 1
+				positions.PushBack(CalcTerrainVertexPos(iQuadX + 1, iQuadY + 1, heightMin, heightMax, quadSize, size * perlinScale));  // 1, 1
 
-				uvs.PushBack(vec2(1, 1));
-				uvs.PushBack(vec2(0, 1));
-				uvs.PushBack(vec2(0, 0));
-				uvs.PushBack(vec2(1, 0));
+				//uvs.PushBack(vec2(1, 1));
+				//uvs.PushBack(vec2(0, 1));
+				//uvs.PushBack(vec2(0, 0));
+				//uvs.PushBack(vec2(1, 0));
+
+				float uvX0 = float(iQuadX) / numQuadsPerSide;
+				float uvY0 = float(iQuadY) / numQuadsPerSide;
+				float uvX1 = float(iQuadX + 1) / numQuadsPerSide;
+				float uvY1 = float(iQuadY + 1) / numQuadsPerSide;
+
+				uvs.PushBack(vec2(uvX1, uvY1)); // Top-right
+				uvs.PushBack(vec2(uvX0, uvY1)); // Top-left
+				uvs.PushBack(vec2(uvX0, uvY0)); // Bottom-left
+				uvs.PushBack(vec2(uvX1, uvY0)); // Bottom-right
 			}
 		}
 
@@ -150,6 +180,55 @@ namespace iol
 			indices.PushBack(i + 3);
 
 			i += 4;
+		}
+		*/
+
+		float perlinScale = 0.5f;
+
+		size_t numVerticesPerSide = numQuadsPerSide + 1; // One extra vertex per row/column for shared edges
+		float quadSize = size / numQuadsPerSide;
+
+		positions.Create(numVerticesPerSide * numVerticesPerSide);
+		uvs.Create(numVerticesPerSide * numVerticesPerSide);
+		indices.Create(6 * numQuadsPerSide * numQuadsPerSide);
+
+		// Generate vertices and UVs
+		for (int32 iVertexY = 0; iVertexY < numVerticesPerSide; iVertexY++)
+		{
+			for (int32 iVertexX = 0; iVertexX < numVerticesPerSide; iVertexX++)
+			{
+				// Calculate vertex position
+				vec3 vertexPos = CalcTerrainVertexPos(iVertexX, iVertexY, heightMin, heightMax, quadSize, size * perlinScale);
+				positions.PushBack(vertexPos);
+
+				// Calculate UV coordinates
+				float u = float(iVertexX) / numQuadsPerSide * tileX; // Normalized UVs
+				float v = float(iVertexY) / numQuadsPerSide * tileY;
+				uvs.PushBack(vec2(u, v));
+			}
+		}
+
+		// Generate indices
+		for (int32 iQuadY = 0; iQuadY < numQuadsPerSide; iQuadY++)
+		{
+			for (int32 iQuadX = 0; iQuadX < numQuadsPerSide; iQuadX++)
+			{
+				// Calculate vertex indices for the two triangles forming a quad
+				size_t topLeft = iQuadY * numVerticesPerSide + iQuadX;
+				size_t topRight = topLeft + 1;
+				size_t bottomLeft = topLeft + numVerticesPerSide;
+				size_t bottomRight = bottomLeft + 1;
+
+				// First triangle
+				indices.PushBack(topLeft);
+				indices.PushBack(bottomLeft);
+				indices.PushBack(topRight);
+
+				// Second triangle
+				indices.PushBack(topRight);
+				indices.PushBack(bottomLeft);
+				indices.PushBack(bottomRight);
+			}
 		}
 	}
 
@@ -471,4 +550,27 @@ namespace iol
 	{
 		return false;
 	}
+
+	/*void Mesh::LoadTerrain(vec3 origin, uint32 width, uint32 depth, float scale, float minHeight, float maxHeight)
+	{
+		uint32 numVerticesX = width + 1;
+		uint32 numVerticesZ = depth + 1;
+		uint32 vertexCount = numVerticesX * numVerticesZ;
+
+		positions.Create(vertexCount);
+		
+		for (uint32 z = 0; z < numVerticesZ; z++)
+		{
+			for (uint32 x = 0; x < numVerticesX; x++)
+			{
+				vec2 pos2D = vec2(x * scale, z * scale);
+				float height = PerlinNoise(pos2D);
+				vec3 pos3D = origin + vec3(pos2D.x, height, pos2D.y);
+
+				positions.PushBack(pos3D);
+			}
+		}
+
+
+	}*/
 }

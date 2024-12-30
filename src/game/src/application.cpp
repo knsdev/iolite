@@ -21,10 +21,10 @@ namespace iol
 		prop.orthographicSize = 1.0f;
 		prop.fieldOfViewDegrees = 60.0f;
 		prop.nearPlane = 0.01f;
-		prop.farPlane = 1000.0f;
+		prop.farPlane = 100.0f;
 
-		vec3 cameraStartPos = vec3(0.0f, 0.0f, 3.0f);
-		vec3 cameraLookDir = vec3(0.0f, 0.0f, -1.0f);
+		vec3 cameraStartPos = vec3(3.64f, 0.35f, 6.2f);
+		vec3 cameraLookDir = vec3(1.0f, 0.0f, 1.0f);
 
 		m_camera = new Camera(prop);
 		m_cameraFlying = new CameraFlying(&m_camera->transform, cameraStartPos, cameraLookDir);
@@ -104,7 +104,10 @@ namespace iol
 		//**********************************
 
 		//m_mesh.LoadCube();
-		m_mesh.LoadObjFile("res/model/sphere_low_poly.obj");
+		//m_mesh.LoadObjFile("res/model/sphere_low_poly.obj");
+		//m_mesh.LoadTerrain(glm::vec3(0.0f, 0.0f, 0.0f), 4, 4, 1.0f, 0.0f, 5.0f);
+		//m_mesh.LoadQuad();
+		m_mesh.LoadTerrain(50.0f, 50, 0.0f, 4.0f, 20.0f, 20.0f);
 
 		size_t vertexCount = m_mesh.GetVertexCount();
 
@@ -139,10 +142,11 @@ namespace iol
 		//**********************************
 
 		TextureParam texParam;
-		texParam.filter = TextureFilter::LinearMipMapLinear;
 		texParam.format = TextureFormat::RGBA;
+		texParam.filter = TextureFilter::LinearMipMapLinear;
 		texParam.genMipMaps = true;
 		m_texture = g->CreateTextureFromFile("res/texture/prototype_black.png", texParam);
+		//m_texture = g->CreateTextureFromFile("res/texture/uv_test_texture.png", texParam);
 	}
 
 	void GameApplication::Destroy()
@@ -215,10 +219,10 @@ namespace iol
 		g->DrawIndexed(g->GetIndexBufferNumIndices(m_indexBuffer));
 
 		// Draw second object
-		vec3 objectPos = vec3(6.0f, 0.0f, 0.0f);
+		/*vec3 objectPos = vec3(6.0f, 0.0f, 0.0f);
 		m_uniformData.mvp = viewProj * glm::translate(mat4(1), objectPos);
 		g->SetUniformBufferData(m_uniformBuffer, &m_uniformData, sizeof(m_uniformData));
-		g->DrawIndexed(g->GetIndexBufferNumIndices(m_indexBuffer));
+		g->DrawIndexed(g->GetIndexBufferNumIndices(m_indexBuffer));*/
 
 		g->EndRender();
 	}

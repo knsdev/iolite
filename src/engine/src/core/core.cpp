@@ -2,6 +2,8 @@
 #include "iol_debug.h"
 #include <chrono>
 
+using namespace glm;
+
 namespace iol
 {
 	size_t Align(size_t value, size_t alignment)

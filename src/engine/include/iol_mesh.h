@@ -27,11 +27,11 @@ namespace iol
 
 		void LoadPrimitive(MeshPrimitiveType type);
 		void LoadQuad();
-		void LoadPlane(float size = 5.0f, size_t numQuadsPerSide = 5);
+		void LoadTerrain(float size, size_t numQuadsPerSide, float heightMin, float heightMax, float tileX, float tileY);
 		void LoadCube();
 		void LoadSphere();
 		void LoadCapsule();
-
+		
 		size_t GetVertexCount() const { return positions.count; }
 		size_t GetIndexCount() const { return indices.count; }
 
