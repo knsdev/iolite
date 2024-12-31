@@ -27,7 +27,7 @@ namespace iol
 
 		void LoadPrimitive(MeshPrimitiveType type);
 		void LoadQuad();
-		void LoadTerrain(float size, size_t numQuadsPerSide, float heightMin, float heightMax, float tileX, float tileY);
+		void LoadTerrain(float size, size_t numQuadsPerSide, float tileX, float tileY, float heightMin, float heightMax, float perlinScale);
 		void LoadCube();
 		void LoadSphere();
 		void LoadCapsule();

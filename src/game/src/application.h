@@ -48,6 +48,8 @@ namespace iol
 		UniformBuffer* m_uniformBuffer;
 
 		Mesh m_mesh;
+		VertexPosUV* m_vertices;
+		size_t m_vertexCount;
 		VertexBuffer* m_vertexBuffer;
 		IndexBuffer* m_indexBuffer;
 		VertexArray* m_vertexArray;

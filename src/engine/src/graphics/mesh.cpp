@@ -75,7 +75,7 @@ namespace iol
 			LoadQuad();
 			break;
 		case MeshPrimitiveType::Plane:
-			LoadTerrain(5.0f, 5, 0.0f, 1.0f, 1.0f, 1.0f);
+			LoadTerrain(5.0f, 5, 5.0f, 5.0f, 0.0f, 0.0f, 1.0f);
 			break;
 		case MeshPrimitiveType::Cube:
 			LoadCube();
@@ -127,64 +127,8 @@ namespace iol
 		return pos;
 	}
 
-	void Mesh::LoadTerrain(float size, size_t numQuadsPerSide, float heightMin, float heightMax, float tileX, float tileY)
+	void Mesh::LoadTerrain(float size, size_t numQuadsPerSide, float tileX, float tileY, float heightMin, float heightMax, float perlinScale)
 	{
-		/*
-		float perlinScale = 0.5f;
-
-		size_t numQuads = numQuadsPerSide * numQuadsPerSide;
-		float quadSize = size / numQuadsPerSide;
-
-		positions.Create(4 * numQuads);
-		uvs.Create(4 * numQuads);
-		indices.Create(6 * numQuads);
-
-		vec3 pos;
-		float vertexHeight;
-
-		for (int32 iQuadY = 0; iQuadY < numQuadsPerSide; iQuadY++)
-		{
-			for (int32 iQuadX = 0; iQuadX < numQuadsPerSide; iQuadX++)
-			{
-				positions.PushBack(CalcTerrainVertexPos(iQuadX + 1, iQuadY, heightMin, heightMax, quadSize, size * perlinScale));      // 1, 0
-				positions.PushBack(CalcTerrainVertexPos(iQuadX, iQuadY, heightMin, heightMax, quadSize, size * perlinScale));          // 0, 0
-				positions.PushBack(CalcTerrainVertexPos(iQuadX, iQuadY + 1, heightMin, heightMax, quadSize, size * perlinScale));      // 0, 1
-				positions.PushBack(CalcTerrainVertexPos(iQuadX + 1, iQuadY + 1, heightMin, heightMax, quadSize, size * perlinScale));  // 1, 1
-
-				//uvs.PushBack(vec2(1, 1));
-				//uvs.PushBack(vec2(0, 1));
-				//uvs.PushBack(vec2(0, 0));
-				//uvs.PushBack(vec2(1, 0));
-
-				float uvX0 = float(iQuadX) / numQuadsPerSide;
-				float uvY0 = float(iQuadY) / numQuadsPerSide;
-				float uvX1 = float(iQuadX + 1) / numQuadsPerSide;
-				float uvY1 = float(iQuadY + 1) / numQuadsPerSide;
-
-				uvs.PushBack(vec2(uvX1, uvY1)); // Top-right
-				uvs.PushBack(vec2(uvX0, uvY1)); // Top-left
-				uvs.PushBack(vec2(uvX0, uvY0)); // Bottom-left
-				uvs.PushBack(vec2(uvX1, uvY0)); // Bottom-right
-			}
-		}
-
-		size_t i = 0;
-
-		for (size_t iQuad = 0; iQuad < numQuads; iQuad++)
-		{
-			indices.PushBack(i);
-			indices.PushBack(i + 1);
-			indices.PushBack(i + 2);
-			indices.PushBack(i);
-			indices.PushBack(i + 2);
-			indices.PushBack(i + 3);
-
-			i += 4;
-		}
-		*/
-
-		float perlinScale = 0.5f;
-
 		size_t numVerticesPerSide = numQuadsPerSide + 1; // One extra vertex per row/column for shared edges
 		float quadSize = size / numQuadsPerSide;
 
@@ -198,7 +142,7 @@ namespace iol
 			for (int32 iVertexX = 0; iVertexX < numVerticesPerSide; iVertexX++)
 			{
 				// Calculate vertex position
-				vec3 vertexPos = CalcTerrainVertexPos(iVertexX, iVertexY, heightMin, heightMax, quadSize, size * perlinScale);
+				vec3 vertexPos = CalcTerrainVertexPos(iVertexX, -iVertexY, heightMin, heightMax, quadSize, size * perlinScale);
 				positions.PushBack(vertexPos);
 
 				// Calculate UV coordinates
@@ -214,19 +158,19 @@ namespace iol
 			for (int32 iQuadX = 0; iQuadX < numQuadsPerSide; iQuadX++)
 			{
 				// Calculate vertex indices for the two triangles forming a quad
-				size_t topLeft = iQuadY * numVerticesPerSide + iQuadX;
-				size_t topRight = topLeft + 1;
-				size_t bottomLeft = topLeft + numVerticesPerSide;
+				size_t bottomLeft = iQuadY * numVerticesPerSide + iQuadX;
 				size_t bottomRight = bottomLeft + 1;
+				size_t topLeft = bottomLeft + numVerticesPerSide;
+				size_t topRight = topLeft + 1;
 
 				// First triangle
 				indices.PushBack(topLeft);
 				indices.PushBack(bottomLeft);
-				indices.PushBack(topRight);
+				indices.PushBack(bottomRight);
 
 				// Second triangle
 				indices.PushBack(topRight);
-				indices.PushBack(bottomLeft);
+				indices.PushBack(topLeft);
 				indices.PushBack(bottomRight);
 			}
 		}
@@ -550,27 +494,4 @@ namespace iol
 	{
 		return false;
 	}
-
-	/*void Mesh::LoadTerrain(vec3 origin, uint32 width, uint32 depth, float scale, float minHeight, float maxHeight)
-	{
-		uint32 numVerticesX = width + 1;
-		uint32 numVerticesZ = depth + 1;
-		uint32 vertexCount = numVerticesX * numVerticesZ;
-
-		positions.Create(vertexCount);
-		
-		for (uint32 z = 0; z < numVerticesZ; z++)
-		{
-			for (uint32 x = 0; x < numVerticesX; x++)
-			{
-				vec2 pos2D = vec2(x * scale, z * scale);
-				float height = PerlinNoise(pos2D);
-				vec3 pos3D = origin + vec3(pos2D.x, height, pos2D.y);
-
-				positions.PushBack(pos3D);
-			}
-		}
-
-
-	}*/
 }
