@@ -5,6 +5,7 @@
 #include "iol_event.h"
 #include "iol_input.h"
 #include "iol_core.h"
+#include "iol_application.h"
 #include <SDL.h>
 #include <thread>
 #include <chrono>
@@ -103,7 +104,6 @@ namespace iol::Engine
 		//**********************************
 
 		app->Destroy();
-		delete app;
 
 		input_DestroySystem();
 		s_engine.graphicsSystem->Destroy();

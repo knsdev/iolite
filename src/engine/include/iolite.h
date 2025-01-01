@@ -2,6 +2,7 @@
 #define IOLITE_H
 
 #include "iol_definitions.h"
+#include "iol_application.h"
 #include "iol_engine.h"
 #include "iol_memory.h"
 #include "iol_debug.h"

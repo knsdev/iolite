@@ -6,6 +6,7 @@
 namespace iol
 {
 	class GraphicsSystem;
+	class Application;
 
 	struct EngineParams
 	{
@@ -18,20 +19,6 @@ namespace iol
 		bool fullScreen;
 		bool vsync;
 		bool quitOnEscape;
-	};
-
-	class IOL_API Application
-	{
-	public:
-		Application() {}
-		virtual ~Application() {}
-
-		virtual void Create(const EngineParams& params) = 0;
-		virtual void Destroy() = 0;
-		virtual void Update(float deltaTime) = 0;
-		virtual void FixedUpdate(float deltaTime) = 0;
-
-		GraphicsSystem* m_graphicsSystem;
 	};
 
 	namespace Engine

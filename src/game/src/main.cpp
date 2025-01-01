@@ -16,6 +16,7 @@ int main(int argc, char* argv[])
 	params.fixedUPS = 60;
 	params.quitOnEscape = true;
 
-	Engine::Run(params, new GameApplication());
+	GameApplication app;
+	Engine::Run(params, &app);
 }
 
