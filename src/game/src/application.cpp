@@ -146,24 +146,13 @@ namespace iol
 
 	void GameApplication::Update(float deltaTime)
 	{
-		int index = m_vertexCount / 2;
-		float speed = 4.0f;
-
-		if (input_GetKeyState(IOL_SCANCODE_UP) == KeyState_Holding)
-		{
-			m_vertices[index].pos.y += speed * deltaTime;
-		}
-		else if(input_GetKeyState(IOL_SCANCODE_DOWN) == KeyState_Holding)
-		{
-			m_vertices[index].pos.y -= speed * deltaTime;
-		}
-
 		UpdateCamera(deltaTime);
 		Render(deltaTime);
 	}
 
 	void GameApplication::UpdateCamera(float deltaTime)
 	{
+		GraphicsSystem* g = m_graphicsSystem;
 		CameraProp prop = m_camera->GetProp();
 
 		if (input_GetKeyState(IOL_SCANCODE_E) == KeyState_Holding)
@@ -180,6 +169,31 @@ namespace iol
 		m_camera->SetProp(prop);
 
 		m_cameraFlying->Update(deltaTime);
+
+		if (input_GetMouseButtonState(MouseButton_Left) == KeyState_Holding)
+		{
+			vec3 rayOrigin;
+			vec3 rayDir;
+			GetRayFromScreenPoint(m_camera->transform.position, m_camera->GetViewProjectionMatrix(), input_GetMousePosition(), g->GetScreenWidth(), g->GetScreenHeight(), rayOrigin, rayDir);
+
+			float distance;
+			vec3 hitPoint;
+			Array<uint32> hitTriangleIndices;
+
+			if (RayIntersectsMesh(rayOrigin, rayDir, m_mesh, distance, hitPoint, hitTriangleIndices))
+			{
+				const float speed = 4.0f;
+				float step = speed * deltaTime;
+
+				m_mesh.positions[hitTriangleIndices[0]].y += step;
+				m_mesh.positions[hitTriangleIndices[1]].y += step;
+				m_mesh.positions[hitTriangleIndices[2]].y += step;
+
+				m_vertices[hitTriangleIndices[0]].pos.y += step;
+				m_vertices[hitTriangleIndices[1]].pos.y += step;
+				m_vertices[hitTriangleIndices[2]].pos.y += step;
+			}
+		}
 	}
 
 	void GameApplication::Render(float deltaTime)
