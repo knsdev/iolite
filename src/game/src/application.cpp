@@ -25,6 +25,10 @@ namespace iol
 
 		m_camera = new Camera(prop);
 		m_cameraFlying = new CameraFlying(&m_camera->transform, cameraStartPos, cameraLookDir);
+		
+		CameraFlyingProp camFlyProp;
+		camFlyProp.mouseButtonToRotateCamera = MouseButton_Middle;
+		m_cameraFlying->SetProp(camFlyProp);
 
 		//------------------------------------
 		// Load Shader
@@ -96,7 +100,7 @@ namespace iol
 		//m_mesh.LoadObjFile("res/model/sphere_low_poly.obj");
 		//m_mesh.LoadTerrain(glm::vec3(0.0f, 0.0f, 0.0f), 4, 4, 1.0f, 0.0f, 5.0f);
 		//m_mesh.LoadQuad();
-		m_mesh.LoadTerrain(40.0f, 80, 10.0f, 10.0f, 0.0f, 7.0f, 0.2f);
+		m_mesh.LoadTerrain(40.0f, 80, 10.0f, 10.0f, 0.0f, 0.0f, 0.2f);
 
 		m_vertexCount = m_mesh.GetVertexCount();
 		m_vertices = iol_alloc_array(VertexPosUV, m_vertexCount);
@@ -170,8 +174,19 @@ namespace iol
 
 		m_cameraFlying->Update(deltaTime);
 
-		if (input_GetMouseButtonState(MouseButton_Left) == KeyState_Holding)
+		const float speed = 4.0f;
+		const float radius = 5.0f;
+
+		bool holdLMB = input_GetMouseButtonState(MouseButton_Left) == KeyState_Holding;
+		bool holdRMB = input_GetMouseButtonState(MouseButton_Right) == KeyState_Holding;
+
+		if (holdLMB || holdRMB)
 		{
+			float step = speed * deltaTime;
+
+			if (holdRMB)
+				step = -step;
+
 			vec3 rayOrigin;
 			vec3 rayDir;
 			GetRayFromScreenPoint(m_camera->transform.position, m_camera->GetViewProjectionMatrix(), input_GetMousePosition(), g->GetScreenWidth(), g->GetScreenHeight(), rayOrigin, rayDir);
@@ -182,16 +197,16 @@ namespace iol
 
 			if (RayIntersectsMesh(rayOrigin, rayDir, m_mesh, distance, hitPoint, hitTriangleIndices))
 			{
-				const float speed = 4.0f;
-				float step = speed * deltaTime;
+				Array<uint32> trianglesInRadius;
 
-				m_mesh.positions[hitTriangleIndices[0]].y += step;
-				m_mesh.positions[hitTriangleIndices[1]].y += step;
-				m_mesh.positions[hitTriangleIndices[2]].y += step;
-
-				m_vertices[hitTriangleIndices[0]].pos.y += step;
-				m_vertices[hitTriangleIndices[1]].pos.y += step;
-				m_vertices[hitTriangleIndices[2]].pos.y += step;
+				if (m_mesh.GetTrianglesInRadius(hitPoint, radius, trianglesInRadius))
+				{
+					for (size_t i = 0; i < trianglesInRadius.count; i++)
+					{
+						m_mesh.positions[trianglesInRadius[i]].y += step;
+						m_vertices[trianglesInRadius[i]].pos.y += step;
+					}
+				}
 			}
 		}
 	}

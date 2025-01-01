@@ -3,6 +3,7 @@
 
 #include "iol_definitions.h"
 #include "iol_transform.h"
+#include "iol_input_definitions.h"
 
 namespace iol
 {
@@ -49,6 +50,7 @@ namespace iol
 		float speed = 3.0f;
 		float sensitivityHorizontal = 0.2f;
 		float sensitivityVertical = 0.2f;
+		MouseButton mouseButtonToRotateCamera = MouseButton_Right;
 	};
 
 	class IOL_API CameraFlying

@@ -35,7 +35,7 @@ namespace iol
 		ivec2 mouseDeltaPos = mousePos - this->mouseLastPos;
 		this->mouseLastPos = mousePos;
 
-		if (input_IsMouseButtonDown(MouseButton_Right))
+		if (input_IsMouseButtonDown(prop.mouseButtonToRotateCamera))
 		{
 			transform->RotateAxisWorld(world_up, -mouseDeltaPos.x * this->prop.sensitivityHorizontal);
 			transform->RotateAxisLocal(world_right, -mouseDeltaPos.y * this->prop.sensitivityVertical);

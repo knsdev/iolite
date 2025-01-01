@@ -2,7 +2,8 @@
 #include "iol_file.h"
 #include "iol_hashmap.h"
 #include "glm/gtx/rotate_vector.hpp"
-#include "glm/ext/quaternion_common.inl"
+#include "glm/ext/quaternion_common.hpp"
+#include "glm/gtx/norm.hpp"
 #include <stdio.h>
 #include <string>
 
@@ -493,5 +494,32 @@ namespace iol
 	bool Mesh::LoadBinFile(const char* filePath)
 	{
 		return false;
+	}
+
+	bool Mesh::GetTrianglesInRadius(glm::vec3 pos, float radius, Array<uint32>& outIndices)
+	{
+		outIndices.Create(30000);
+		float radiusSqr = radius * radius;
+
+		for (size_t i = 0; i < indices.count; i += 3)
+		{
+			if (outIndices.count + 3 >= outIndices.capacity)
+				return true;
+
+			vec3 v0 = positions[indices[i]];
+			vec3 v1 = positions[indices[i + 1]];
+			vec3 v2 = positions[indices[i + 2]];
+
+			vec3 center = (v0 + v1 + v2) / 3.0f;
+
+			if (glm::length2(center - pos) < radiusSqr)
+			{
+				outIndices.PushBack(indices[i]);
+				outIndices.PushBack(indices[i + 1]);
+				outIndices.PushBack(indices[i + 2]);
+			}
+		}
+
+		return outIndices.count > 0;
 	}
 }

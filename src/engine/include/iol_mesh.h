@@ -31,6 +31,8 @@ namespace iol
 		void LoadCube();
 		void LoadSphere();
 		void LoadCapsule();
+
+		bool GetTrianglesInRadius(glm::vec3 pos, float radius, Array<uint32>& outIndices);
 		
 		size_t GetVertexCount() const { return positions.count; }
 		size_t GetIndexCount() const { return indices.count; }
