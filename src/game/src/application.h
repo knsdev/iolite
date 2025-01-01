@@ -40,7 +40,6 @@ namespace iol
 
 	private:
 		void Render(float deltaTime);
-		void UpdateCamera(float deltaTime);
 
 	private:
 		Camera* m_camera;
@@ -67,6 +66,7 @@ namespace iol
 		glm::vec3 m_startHitPoint;
 		Array<uint32> m_selectedIndices;
 		Array<glm::vec3> m_selectedOriginalPositions;
+		Array<float> m_selectedOriginalDistances;
 	};
 }
 

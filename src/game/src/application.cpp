@@ -72,18 +72,6 @@ namespace iol
 			m_pipelineStates.PushBack(g->CreatePipelineState(pipelineParam));
 		}
 
-		//{
-		//	// Points
-		//	GraphicsPipeLineStateParam pipelineParam;
-		//	pipelineParam.primitiveType = PrimitiveType::Point;
-		//	pipelineParam.pShader = m_shader;
-		//	pipelineParam.pVertexLayout = m_vertexLayout;
-		//	pipelineParam.blendMode = BlendMode::None;
-		//	pipelineParam.rasterizerFlags &= ~RasterizerFlags_BackFaceCulling;
-		//	pipelineParam.rasterizerFlags |= RasterizerFlags_WireFrame;
-		//	m_pipelineStates.PushBack(g->CreatePipelineState(pipelineParam));
-		//}
-
 		m_currentPipelineStateIndex = 0;
 
 		//------------------------------------
@@ -152,7 +140,21 @@ namespace iol
 	{
 		GraphicsSystem* g = m_graphicsSystem;
 
-		UpdateCamera(deltaTime);
+		CameraProp camProp = m_camera->GetProp();
+
+		if (input_GetKeyState(IOL_SCANCODE_E) == KeyState_Holding)
+		{
+			camProp.fieldOfViewDegrees += 10.0f * deltaTime;
+			camProp.orthographicSize += 1.0f * deltaTime;
+		}
+		else if (input_GetKeyState(IOL_SCANCODE_F) == KeyState_Holding)
+		{
+			camProp.fieldOfViewDegrees -= 10.0f * deltaTime;
+			camProp.orthographicSize -= 1.0f * deltaTime;
+		}
+
+		m_camera->SetProp(camProp);
+		m_cameraFlying->Update(deltaTime);
 
 		const float radius = 5.0f;
 
@@ -184,10 +186,16 @@ namespace iol
 					if (m_mesh.GetTrianglesInRadius(hitPoint, radius, m_selectedIndices))
 					{
 						m_selectedOriginalPositions.Create(m_selectedIndices.count);
+						m_selectedOriginalDistances.Create(m_selectedIndices.count);
 
 						for (size_t i = 0; i < m_selectedIndices.count; i++)
 						{
-							m_selectedOriginalPositions.PushBack(m_mesh.positions[m_selectedIndices[i]]);
+							uint32 vertexIndex = m_selectedIndices[i];
+							vec3 origPos = m_mesh.positions[vertexIndex];
+							float origDistance = glm::length(hitPoint - origPos);
+
+							m_selectedOriginalPositions.PushBack(origPos);
+							m_selectedOriginalDistances.PushBack(origDistance);
 						}
 					}
 				}
@@ -202,8 +210,13 @@ namespace iol
 
 				for (size_t i = 0; i < m_selectedIndices.count; i++)
 				{
-					uint32 index = m_selectedIndices[i];
-					m_vertices[index].pos = m_mesh.positions[index] = m_selectedOriginalPositions[i] + vec3(0.0f, heightDiff, 0.0f);
+					uint32 vertexIndex = m_selectedIndices[i];
+
+					float percent = m_selectedOriginalDistances[i] / radius;
+					percent = Clamp(1.0f - percent, 0.0f, 0.9f);
+					float finalHeightDiff = heightDiff * percent;
+
+					m_vertices[vertexIndex].pos = m_mesh.positions[vertexIndex] = m_selectedOriginalPositions[i] + vec3(0.0f, finalHeightDiff, 0.0f);
 				}
 			}
 			else
@@ -217,26 +230,6 @@ namespace iol
 		}
 
 		Render(deltaTime);
-	}
-
-	void GameApplication::UpdateCamera(float deltaTime)
-	{
-		CameraProp prop = m_camera->GetProp();
-
-		if (input_GetKeyState(IOL_SCANCODE_E) == KeyState_Holding)
-		{
-			prop.fieldOfViewDegrees += 10.0f * deltaTime;
-			prop.orthographicSize += 1.0f * deltaTime;
-		}
-		else if (input_GetKeyState(IOL_SCANCODE_F) == KeyState_Holding)
-		{
-			prop.fieldOfViewDegrees -= 10.0f * deltaTime;
-			prop.orthographicSize -= 1.0f * deltaTime;
-		}
-
-		m_camera->SetProp(prop);
-
-		m_cameraFlying->Update(deltaTime);
 	}
 
 	void GameApplication::Render(float deltaTime)
