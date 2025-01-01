@@ -21,6 +21,12 @@ namespace iol
 		glm::mat4 mvp;
 	};
 
+	enum TerrainEditState
+	{
+		TerrainEditState_Initial,
+		TerrainEditState_DragHeight,
+	};
+
 	class GameApplication : public Application
 	{
 	public:
@@ -55,6 +61,12 @@ namespace iol
 		VertexArray* m_vertexArray;
 
 		Texture* m_texture;
+
+		TerrainEditState m_editState = TerrainEditState_Initial;
+		glm::vec2 m_startMousePos;
+		glm::vec3 m_startHitPoint;
+		Array<uint32> m_selectedIndices;
+		Array<glm::vec3> m_selectedOriginalPositions;
 	};
 }
 

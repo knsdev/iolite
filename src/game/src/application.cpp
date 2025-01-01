@@ -150,13 +150,77 @@ namespace iol
 
 	void GameApplication::Update(float deltaTime)
 	{
+		GraphicsSystem* g = m_graphicsSystem;
+
 		UpdateCamera(deltaTime);
+
+		const float radius = 5.0f;
+
+		KeyState leftMouseBtnState = input_GetMouseButtonState(MouseButton_Left);
+		vec2 mousePos = input_GetMousePosition();
+		float screenWidth = g->GetScreenWidth();
+		float screenHeight = g->GetScreenHeight();
+
+		switch (m_editState)
+		{
+		case TerrainEditState_Initial:
+			if (leftMouseBtnState == KeyState_Pressed)
+			{
+				m_startMousePos = mousePos;
+
+				vec3 rayOrigin;
+				vec3 rayDir;
+				GetRayFromScreenPoint(m_camera->transform.position, m_camera->GetViewProjectionMatrix(), mousePos, screenWidth, screenHeight, rayOrigin, rayDir);
+
+				float distance;
+				vec3 hitPoint;
+				Array<uint32> hitTriangleIndices;
+
+				if (RayIntersectsMesh(rayOrigin, rayDir, m_mesh, distance, hitPoint, hitTriangleIndices))
+				{
+					m_startHitPoint = hitPoint;
+					m_editState = TerrainEditState_DragHeight;
+
+					if (m_mesh.GetTrianglesInRadius(hitPoint, radius, m_selectedIndices))
+					{
+						m_selectedOriginalPositions.Create(m_selectedIndices.count);
+
+						for (size_t i = 0; i < m_selectedIndices.count; i++)
+						{
+							m_selectedOriginalPositions.PushBack(m_mesh.positions[m_selectedIndices[i]]);
+						}
+					}
+				}
+			}
+			break;
+
+		case TerrainEditState_DragHeight:
+			if (leftMouseBtnState == KeyState_Holding)
+			{
+				vec2 mouseDiff = mousePos - m_startMousePos;
+				float heightDiff = mouseDiff.y * -0.1f;
+
+				for (size_t i = 0; i < m_selectedIndices.count; i++)
+				{
+					uint32 index = m_selectedIndices[i];
+					m_vertices[index].pos = m_mesh.positions[index] = m_selectedOriginalPositions[i] + vec3(0.0f, heightDiff, 0.0f);
+				}
+			}
+			else
+			{
+				m_editState = TerrainEditState_Initial;
+			}
+			break;
+
+		default:
+			break;
+		}
+
 		Render(deltaTime);
 	}
 
 	void GameApplication::UpdateCamera(float deltaTime)
 	{
-		GraphicsSystem* g = m_graphicsSystem;
 		CameraProp prop = m_camera->GetProp();
 
 		if (input_GetKeyState(IOL_SCANCODE_E) == KeyState_Holding)
@@ -173,42 +237,6 @@ namespace iol
 		m_camera->SetProp(prop);
 
 		m_cameraFlying->Update(deltaTime);
-
-		const float speed = 4.0f;
-		const float radius = 5.0f;
-
-		bool holdLMB = input_GetMouseButtonState(MouseButton_Left) == KeyState_Holding;
-		bool holdRMB = input_GetMouseButtonState(MouseButton_Right) == KeyState_Holding;
-
-		if (holdLMB || holdRMB)
-		{
-			float step = speed * deltaTime;
-
-			if (holdRMB)
-				step = -step;
-
-			vec3 rayOrigin;
-			vec3 rayDir;
-			GetRayFromScreenPoint(m_camera->transform.position, m_camera->GetViewProjectionMatrix(), input_GetMousePosition(), g->GetScreenWidth(), g->GetScreenHeight(), rayOrigin, rayDir);
-
-			float distance;
-			vec3 hitPoint;
-			Array<uint32> hitTriangleIndices;
-
-			if (RayIntersectsMesh(rayOrigin, rayDir, m_mesh, distance, hitPoint, hitTriangleIndices))
-			{
-				Array<uint32> trianglesInRadius;
-
-				if (m_mesh.GetTrianglesInRadius(hitPoint, radius, trianglesInRadius))
-				{
-					for (size_t i = 0; i < trianglesInRadius.count; i++)
-					{
-						m_mesh.positions[trianglesInRadius[i]].y += step;
-						m_vertices[trianglesInRadius[i]].pos.y += step;
-					}
-				}
-			}
-		}
 	}
 
 	void GameApplication::Render(float deltaTime)
