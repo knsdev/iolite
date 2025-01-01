@@ -39,14 +39,14 @@ namespace iol
 		if (pData == nullptr)
 		{
 			pData = iol_alloc_array(T, _capacity);
+			capacity = _capacity;
 		}
 		else if (_capacity > capacity)
 		{
 			Destroy();
 			pData = iol_alloc_array(T, _capacity);
+			capacity = _capacity;
 		}
-
-		capacity = _capacity;
 	}
 
 	template<typename T>

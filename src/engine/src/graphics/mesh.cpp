@@ -504,7 +504,10 @@ namespace iol
 		for (size_t i = 0; i < indices.count; i += 3)
 		{
 			if (outIndices.count + 3 >= outIndices.capacity)
+			{
+				iol_log_error("outIndices.capacity is too low!");
 				return true;
+			}
 
 			vec3 v0 = positions[indices[i]];
 			vec3 v1 = positions[indices[i + 1]];
