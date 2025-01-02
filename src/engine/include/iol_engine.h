@@ -5,7 +5,6 @@
 
 namespace iol
 {
-	class GraphicsSystem;
 	class Application;
 
 	struct EngineParams

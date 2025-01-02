@@ -4,7 +4,6 @@
 #include "iol_definitions.h"
 #include "iol_debug.h"
 #include "iol_memory.h"
-#include "iol_core.h"
 
 namespace iol
 {

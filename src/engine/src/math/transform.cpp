@@ -9,7 +9,7 @@ namespace iol
 {
 	glm::vec3 Transform::GetForward() const
 	{
-		return rotation * world_forward * -1.0f;
+		return rotation * world_forward;
 	}
 
 	glm::vec3 Transform::GetRight() const

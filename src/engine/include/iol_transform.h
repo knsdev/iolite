@@ -9,7 +9,7 @@ namespace iol
 {
 	static const glm::vec3	world_right = glm::vec3(1.0f, 0.0f, 0.0f);
 	static const glm::vec3	world_up = glm::vec3(0.0f, 1.0f, 0.0f);
-	static const glm::vec3	world_forward = glm::vec3(0.0f, 0.0f, 1.0f);
+	static const glm::vec3	world_forward = glm::vec3(0.0f, 0.0f, -1.0f);
 
 	class IOL_API Transform
 	{
