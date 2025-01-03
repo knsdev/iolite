@@ -27,7 +27,8 @@ namespace iol
 		m_cameraFlying = new CameraFlying(&m_camera->transform, cameraStartPos, cameraLookDir);
 		
 		CameraFlyingProp camFlyProp;
-		camFlyProp.mouseButtonToRotateCamera = MouseButton_Middle;
+		camFlyProp.mouseButtonToRotateCamera = MouseButton_Right;
+		camFlyProp.speed = 6.0f;
 		m_cameraFlying->SetProp(camFlyProp);
 
 		//------------------------------------
@@ -84,10 +85,9 @@ namespace iol
 		// Load Mesh
 		//------------------------------------
 
+		//m_mesh.LoadQuad();
 		//m_mesh.LoadCube();
 		//m_mesh.LoadObjFile("res/model/sphere_low_poly.obj");
-		//m_mesh.LoadTerrain(glm::vec3(0.0f, 0.0f, 0.0f), 4, 4, 1.0f, 0.0f, 5.0f);
-		//m_mesh.LoadQuad();
 		m_mesh.LoadTerrain(40.0f, 80, 10.0f, 10.0f, 0.0f, 0.0f, 0.2f);
 
 		m_vertexCount = m_mesh.GetVertexCount();
@@ -112,7 +112,8 @@ namespace iol
 		texParam.format = TextureFormat::RGBA;
 		texParam.filter = TextureFilter::LinearMipMapLinear;
 		texParam.genMipMaps = true;
-		m_texture = g->CreateTextureFromFile("res/texture/uv_test_texture.png", texParam);
+		//m_texture = g->CreateTextureFromFile("res/texture/uv_test_texture.png", texParam);
+		m_texture = g->CreateTextureFromFile("res/texture/horror_texture_pack/Floor/Horror_Floor_13-512x512.png", texParam);
 	}
 
 	void GameApplication::Destroy()
