@@ -88,7 +88,9 @@ namespace iol
 		//m_mesh.LoadQuad();
 		//m_mesh.LoadCube();
 		//m_mesh.LoadObjFile("res/model/sphere_low_poly.obj");
-		m_mesh.LoadTerrain(40.0f, 80, 10.0f, 10.0f, 0.0f, 0.0f, 0.2f);
+
+		m_perlinOffsetX = 0.0f;
+		m_mesh.LoadTerrain(40.0f, 80, 10.0f, 10.0f);
 
 		m_vertexCount = m_mesh.GetVertexCount();
 		m_vertices = iol_alloc_array(VertexPosUV, m_vertexCount);
@@ -113,7 +115,7 @@ namespace iol
 		texParam.filter = TextureFilter::LinearMipMapLinear;
 		texParam.genMipMaps = true;
 		//m_texture = g->CreateTextureFromFile("res/texture/uv_test_texture.png", texParam);
-		m_texture = g->CreateTextureFromFile("res/texture/horror_texture_pack/Floor/Horror_Floor_13-512x512.png", texParam);
+		m_texture = g->CreateTextureFromFile("res/texture/horror_texture_pack/Floor/Horror_Floor_12-512x512.png", texParam);
 	}
 
 	void GameApplication::Destroy()
@@ -173,7 +175,7 @@ namespace iol
 
 				vec3 rayOrigin;
 				vec3 rayDir;
-				GetRayFromScreenPoint(m_camera->transform.position, m_camera->GetViewProjectionMatrix(), mousePos, screenWidth, screenHeight, rayOrigin, rayDir);
+				ScreenPointToRay(m_camera->transform.position, m_camera->GetViewProjectionMatrix(), mousePos, screenWidth, screenHeight, rayOrigin, rayDir);
 
 				float distance;
 				vec3 hitPoint;
@@ -183,6 +185,7 @@ namespace iol
 				{
 					m_startHitPoint = hitPoint;
 					m_editState = TerrainEditState_DragHeight;
+					m_selectedIndices.Create(30000);
 
 					if (m_mesh.GetTrianglesInRadius(hitPoint, radius, m_selectedIndices))
 					{
@@ -228,6 +231,15 @@ namespace iol
 
 		default:
 			break;
+		}
+
+		m_perlinOffsetX += 2.0f * deltaTime;
+		m_mesh.SetTerrainHeightPerlin(0.0f, 6.0f, 0.2f, m_perlinOffsetX, 0.0f);
+
+		for (size_t i = 0; i < m_vertexCount; i++)
+		{
+			m_vertices[i].pos = m_mesh.positions[i];
+			m_vertices[i].uv = m_mesh.uvs[i];
 		}
 
 		Render(deltaTime);

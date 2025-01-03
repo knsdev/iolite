@@ -116,7 +116,7 @@ namespace iol
 		return false;
 	}
 
-	void GetRayFromScreenPoint(glm::vec3 cameraPos, const glm::mat4x4& cameraViewProj, glm::vec2 screenPoint, float screenWidth, float screenHeight, glm::vec3& rayOrigin, glm::vec3& rayDir)
+	void ScreenPointToRay(glm::vec3 cameraPos, const glm::mat4x4& cameraViewProj, glm::vec2 screenPoint, float screenWidth, float screenHeight, glm::vec3& rayOrigin, glm::vec3& rayDir)
 	{
 		float xNDC = (2.0f * screenPoint.x) / screenWidth - 1.0f;
 		float yNDC = 1.0f - (2.0f * screenPoint.y) / screenHeight;

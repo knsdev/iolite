@@ -67,6 +67,8 @@ namespace iol
 		Array<uint32> m_selectedIndices;
 		Array<glm::vec3> m_selectedOriginalPositions;
 		Array<float> m_selectedOriginalDistances;
+
+		float m_perlinOffsetX;
 	};
 }
 

@@ -27,13 +27,14 @@ namespace iol
 
 		void LoadPrimitive(MeshPrimitiveType type);
 		void LoadQuad();
-		void LoadTerrain(float size, size_t numQuadsPerSide, float tileX, float tileY, float heightMin, float heightMax, float perlinScale);
+		void LoadTerrain(float size, size_t numQuadsPerSide, float tileX, float tileY);
+		void SetTerrainHeightPerlin(float heightMin, float heightMax, float perlinScale, float perlinOffsetX, float perlinOffsetY);
 		void LoadCube();
 		void LoadSphere();
 		void LoadCapsule();
-
-		bool GetTrianglesInRadius(glm::vec3 pos, float radius, Array<uint32>& outIndices);
 		
+		bool GetTrianglesInRadius(glm::vec3 pos, float radius, Array<uint32>& outIndices);
+
 		size_t GetVertexCount() const { return positions.count; }
 		size_t GetIndexCount() const { return indices.count; }
 
@@ -41,6 +42,10 @@ namespace iol
 		Array<glm::vec2> uvs;
 		Array<glm::vec3> normals;
 		Array<uint32> indices;
+
+		size_t terrainNumVerticesPerSide;
+		float terrainSize;
+		float terrainQuadSize;
 	};
 }
 

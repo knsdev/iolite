@@ -23,7 +23,7 @@ namespace iol
 
 	bool RayIntersectsTriangle(glm::vec3 rayOrigin, glm::vec3 rayDir, glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, float& t, glm::vec3& hitPoint);
 	bool RayIntersectsMesh(glm::vec3 rayOrigin, glm::vec3 rayDir, const class Mesh& mesh, float& t, glm::vec3& hitPoint, Array<uint32>& hitTriangleIndices);
-	void GetRayFromScreenPoint(glm::vec3 cameraPos, const glm::mat4x4& cameraViewProj, glm::vec2 screenPoint, float screenWidth, float screenHeight, glm::vec3& rayOrigin, glm::vec3& rayDir);
+	void ScreenPointToRay(glm::vec3 cameraPos, const glm::mat4x4& cameraViewProj, glm::vec2 screenPoint, float screenWidth, float screenHeight, glm::vec3& rayOrigin, glm::vec3& rayDir);
 }
 
 #include "internal/core_inl.h"
