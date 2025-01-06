@@ -13,6 +13,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 
 namespace iol::Engine
 {
@@ -130,9 +131,14 @@ namespace iol::Engine
 		{
 			ImGui_ImplSDL2_ProcessEvent(&evtSDL);
 
+			const ImGuiIO& io = ImGui::GetIO();
+
 			switch (evtSDL.type)
 			{
 			case SDL_KEYDOWN:
+				if (io.WantCaptureKeyboard)
+					return;
+
 				evt.type = EventType_KeyPressed;
 				evt.data.keyPressed.scanCode = (ScanCode)evtSDL.key.keysym.scancode;
 				evt.data.keyPressed.repeated = evtSDL.key.repeat != 0;
@@ -146,6 +152,9 @@ namespace iol::Engine
 				break;
 
 			case SDL_MOUSEMOTION:
+				if (io.WantCaptureMouse)
+					return;
+
 				evt.type = EventType_MouseMoved;
 				evt.data.mouseMoved.x = evtSDL.motion.x;
 				evt.data.mouseMoved.y = evtSDL.motion.y;
@@ -153,6 +162,12 @@ namespace iol::Engine
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
+				if (io.WantCaptureMouse)
+					return;
+
+				ImGui::SetWindowFocus(nullptr);
+				ImGui::ClearActiveID();
+
 				evt.type = EventType_MouseButtonPressed;
 				evt.data.mouseButtonPressed.mouseButton = input_ConvertMouseButton(evtSDL.button.button);
 				evt.data.mouseButtonPressed.x = evtSDL.button.x;
@@ -169,6 +184,9 @@ namespace iol::Engine
 				break;
 
 			case SDL_MOUSEWHEEL:
+				if (io.WantCaptureMouse)
+					return;
+
 				evt.type = EventType_MouseScrolled;
 				evt.data.mouseScrolled.dx = evtSDL.wheel.x;
 				evt.data.mouseScrolled.dy = evtSDL.wheel.y;
