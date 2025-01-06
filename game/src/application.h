@@ -5,20 +5,20 @@
 
 namespace iol
 {
-	struct VertexPos
-	{
-		glm::vec3 pos;
-	};
-
 	struct VertexPosUV
 	{
 		glm::vec3 pos;
 		glm::vec2 uv;
 	};
 
-	struct UniformData
+	struct UniformDataMatrices
 	{
 		glm::mat4 mvp;
+	};
+
+	struct UniformDataMaterial
+	{
+		glm::vec4 color;
 	};
 
 	enum TerrainEditState
@@ -45,19 +45,27 @@ namespace iol
 		Camera* m_camera;
 		CameraFlying* m_cameraFlying;
 
-		Shader* m_shader;
-		VertexLayout* m_vertexLayout;
+		Shader* m_shaderMVPTexture;
+		Shader* m_shaderMVPColor;
+		VertexLayout* m_vertexLayoutMVPTexture;
+		VertexLayout* m_vertexLayoutMVPColor;
 		Array<GraphicsPipelineState*> m_pipelineStates;
+		GraphicsPipelineState* m_pipelineStateMVPColorWireframe;
 		size_t m_currentPipelineStateIndex;
-		UniformData m_uniformData;
-		UniformBuffer* m_uniformBuffer;
+		UniformDataMatrices m_uniformDataMatrices;
+		UniformDataMaterial m_uniformDataMaterial;
+		UniformBuffer* m_uniformBufferMatrices;
+		UniformBuffer* m_uniformBufferMaterial;
 
 		Mesh m_mesh;
-		VertexPosUV* m_vertices;
+		VertexPosUV* m_verticesPosUV;
+		glm::vec3* m_verticesPos;
 		size_t m_vertexCount;
-		VertexBuffer* m_vertexBuffer;
+		VertexBuffer* m_vertexBufferPosUV;
+		VertexBuffer* m_vertexBufferPos;
 		IndexBuffer* m_indexBuffer;
-		VertexArray* m_vertexArray;
+		VertexArray* m_vertexArrayMVPTexture;
+		VertexArray* m_vertexArrayMVPColor;
 
 		Texture* m_texture;
 

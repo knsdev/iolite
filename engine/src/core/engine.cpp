@@ -116,10 +116,6 @@ namespace iol::Engine
 		SDL_DestroyWindow(s_engine.window);
 		SDL_Quit();
 		EventSystem::Destroy();
-
-#ifndef IOL_MASTER
-		iol_mem_log_allocations();
-#endif
 	}
 
 	void PollEvents(bool* quit)

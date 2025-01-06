@@ -29,14 +29,20 @@ namespace iol
 		// Create VertexLayout
 		//------------------------------------
 
-		m_shader = g->CreateShaderFromFile("res/shader/basic_mvp_texture.glsl");
+		m_shaderMVPTexture = g->CreateShaderFromFile("res/shader/basic_mvp_texture.glsl");
+		m_shaderMVPColor = g->CreateShaderFromFile("res/shader/basic_mvp_color.glsl");
 
-		VertexAttributeParam attributes[] = {
+		VertexAttributeParam attributesPosUV[] = {
 			{ VertexSemantic::Position, VertexType::Float, 3, VertexSlot::PerVertex, 0 },
 			{ VertexSemantic::Texcoords, VertexType::Float, 2, VertexSlot::PerVertex, 0 }
 		};
 
-		m_vertexLayout = g->CreateVertexLayout(m_shader, attributes, iol_countof(attributes));
+		VertexAttributeParam attributesPos[] = {
+			{ VertexSemantic::Position, VertexType::Float, 3, VertexSlot::PerVertex, 0 }
+		};
+
+		m_vertexLayoutMVPTexture = g->CreateVertexLayout(m_shaderMVPTexture, attributesPosUV, iol_countof(attributesPosUV));
+		m_vertexLayoutMVPColor = g->CreateVertexLayout(m_shaderMVPColor, attributesPos, iol_countof(attributesPos));
 
 		//------------------------------------
 		// Create PipelineState
@@ -45,25 +51,37 @@ namespace iol
 		m_pipelineStates.Create(10);
 
 		{
-			// Default
+			// Default MVP Texture
 			GraphicsPipeLineStateParam pipelineParam;
 			pipelineParam.primitiveType = PrimitiveType::TriangleList;
-			pipelineParam.pShader = m_shader;
-			pipelineParam.pVertexLayout = m_vertexLayout;
+			pipelineParam.pShader = m_shaderMVPTexture;
+			pipelineParam.pVertexLayout = m_vertexLayoutMVPTexture;
 			pipelineParam.blendMode = BlendMode::None;
 			m_pipelineStates.PushBack(g->CreatePipelineState(pipelineParam));
 		}
 
 		{
-			// Wireframe
+			// Wireframe MVP Texture
 			GraphicsPipeLineStateParam pipelineParam;
 			pipelineParam.primitiveType = PrimitiveType::TriangleList;
-			pipelineParam.pShader = m_shader;
-			pipelineParam.pVertexLayout = m_vertexLayout;
+			pipelineParam.pShader = m_shaderMVPTexture;
+			pipelineParam.pVertexLayout = m_vertexLayoutMVPTexture;
 			pipelineParam.blendMode = BlendMode::None;
 			pipelineParam.rasterizerFlags &= ~RasterizerFlags_BackFaceCulling;
 			pipelineParam.rasterizerFlags |= RasterizerFlags_WireFrame;
 			m_pipelineStates.PushBack(g->CreatePipelineState(pipelineParam));
+		}
+
+		{
+			// Wireframe MVP Color
+			GraphicsPipeLineStateParam pipelineParam;
+			pipelineParam.primitiveType = PrimitiveType::TriangleList;
+			pipelineParam.pShader = m_shaderMVPColor;
+			pipelineParam.pVertexLayout = m_vertexLayoutMVPColor;
+			pipelineParam.blendMode = BlendMode::None;
+			pipelineParam.rasterizerFlags &= ~RasterizerFlags_BackFaceCulling;
+			pipelineParam.rasterizerFlags |= RasterizerFlags_WireFrame;
+			m_pipelineStateMVPColorWireframe = g->CreatePipelineState(pipelineParam);
 		}
 
 		m_currentPipelineStateIndex = 0;
@@ -72,7 +90,8 @@ namespace iol
 		// Create UniformBuffer
 		//------------------------------------
 
-		m_uniformBuffer = g->CreateUniformBuffer(&m_uniformData, sizeof(m_uniformData), BufferUsage::DynamicDraw, "UB_matrices");
+		m_uniformBufferMatrices = g->CreateUniformBuffer(&m_uniformDataMatrices, sizeof(m_uniformDataMatrices), BufferUsage::DynamicDraw, "UB_matrices");
+		m_uniformBufferMaterial = g->CreateUniformBuffer(&m_uniformDataMaterial, sizeof(m_uniformDataMaterial), BufferUsage::DynamicDraw, "UB_material");
 
 		//------------------------------------
 		// Load Mesh
@@ -86,18 +105,29 @@ namespace iol
 		m_mesh.LoadTerrain(40.0f, 80, 10.0f, 10.0f);
 
 		m_vertexCount = m_mesh.GetVertexCount();
-		m_vertices = iol_alloc_array(VertexPosUV, m_vertexCount);
+		m_verticesPosUV = iol_alloc_array(VertexPosUV, m_vertexCount);
 
 		for (size_t i = 0; i < m_vertexCount; i++)
 		{
-			m_vertices[i].pos = m_mesh.positions[i];
-			m_vertices[i].uv = m_mesh.uvs[i];
+			m_verticesPosUV[i].pos = m_mesh.positions[i];
+			m_verticesPosUV[i].uv = m_mesh.uvs[i];
 		}
 
-		m_vertexBuffer = g->CreateVertexBuffer(m_vertices, sizeof(*m_vertices) * m_vertexCount, BufferUsage::DynamicDraw);
+		m_vertexBufferPosUV = g->CreateVertexBuffer(m_verticesPosUV, sizeof(*m_verticesPosUV) * m_vertexCount, BufferUsage::DynamicDraw);
+
+		m_verticesPos = iol_alloc_array(glm::vec3, m_vertexCount);
+
+		for (size_t i = 0; i < m_vertexCount; i++)
+		{
+			m_verticesPos[i] = m_mesh.positions[i];
+		}
+
+		m_vertexBufferPos = g->CreateVertexBuffer(m_verticesPos, sizeof(*m_verticesPos) * m_vertexCount, BufferUsage::DynamicDraw);
+
 		m_indexBuffer = g->CreateIndexBuffer(m_mesh.indices.pData, m_mesh.GetIndexCount(), BufferUsage::DynamicDraw);
 
-		m_vertexArray = g->CreateVertexArray(m_vertexLayout, (const VertexBuffer**)&m_vertexBuffer, 1, m_indexBuffer);
+		m_vertexArrayMVPTexture = g->CreateVertexArray(m_vertexLayoutMVPTexture, (const VertexBuffer**)&m_vertexBufferPosUV, 1, m_indexBuffer);
+		m_vertexArrayMVPColor = g->CreateVertexArray(m_vertexLayoutMVPColor, (const VertexBuffer**)&m_vertexBufferPos, 1, m_indexBuffer);
 
 		//------------------------------------
 		// Load Texture
@@ -121,15 +151,23 @@ namespace iol
 		for (size_t i = 0; i < m_pipelineStates.count; i++)
 			g->DestroyPipelineState(m_pipelineStates[i]);
 
-		g->DestroyUniformBuffer(m_uniformBuffer);
-		g->DestroyShader(m_shader);
-		g->DestroyVertexLayout(m_vertexLayout);
-		g->DestroyVertexBuffer(m_vertexBuffer);
+		g->DestroyPipelineState(m_pipelineStateMVPColorWireframe);
+
+		g->DestroyUniformBuffer(m_uniformBufferMatrices);
+		g->DestroyUniformBuffer(m_uniformBufferMaterial);
+		g->DestroyShader(m_shaderMVPTexture);
+		g->DestroyShader(m_shaderMVPColor);
+		g->DestroyVertexLayout(m_vertexLayoutMVPTexture);
+		g->DestroyVertexLayout(m_vertexLayoutMVPColor);
+		g->DestroyVertexBuffer(m_vertexBufferPosUV);
+		g->DestroyVertexBuffer(m_vertexBufferPos);
 		g->DestroyIndexBuffer(m_indexBuffer);
-		g->DestroyVertexArray(m_vertexArray);
+		g->DestroyVertexArray(m_vertexArrayMVPTexture);
+		g->DestroyVertexArray(m_vertexArrayMVPColor);
 		g->DestroyTexture(m_texture);
 
-		iol_free(m_vertices);
+		iol_free(m_verticesPosUV);
+		iol_free(m_verticesPos);
 	}
 
 	void GameApplication::Update(float deltaTime)
@@ -163,9 +201,8 @@ namespace iol
 		switch (m_editState)
 		{
 		case TerrainEditState_Initial:
-			if (leftMouseBtnState == KeyState_Pressed)
 			{
-				m_startMousePos = mousePos;
+				m_selectedIndices.Clear();
 
 				vec3 rayOrigin;
 				vec3 rayDir;
@@ -177,12 +214,15 @@ namespace iol
 
 				if (RayIntersectsMesh(rayOrigin, rayDir, m_mesh, distance, hitPoint, hitTriangleIndices))
 				{
-					m_startHitPoint = hitPoint;
-					m_editState = TerrainEditState_DragHeight;
 					m_selectedIndices.Create(30000);
+					m_mesh.GetTrianglesInRadius(hitPoint, m_editRadius, m_selectedIndices);
 
-					if (m_mesh.GetTrianglesInRadius(hitPoint, m_editRadius, m_selectedIndices))
+					if (leftMouseBtnState == KeyState_Pressed)
 					{
+						m_editState = TerrainEditState_DragHeight;
+						m_startMousePos = mousePos;
+						m_startHitPoint = hitPoint;
+
 						m_selectedOriginalPositions.Create(m_selectedIndices.count);
 						m_selectedOriginalDistances.Create(m_selectedIndices.count);
 
@@ -214,7 +254,10 @@ namespace iol
 					percent = Clamp(1.0f - percent, 0.0f, 0.9f);
 					float finalHeightDiff = heightDiff * percent;
 
-					m_vertices[vertexIndex].pos = m_mesh.positions[vertexIndex] = m_selectedOriginalPositions[i] + vec3(0.0f, finalHeightDiff, 0.0f);
+					m_verticesPos[vertexIndex]
+						= m_verticesPosUV[vertexIndex].pos
+						= m_mesh.positions[vertexIndex]
+						= m_selectedOriginalPositions[i] + vec3(0.0f, finalHeightDiff, 0.0f);
 				}
 			}
 			else
@@ -252,18 +295,51 @@ namespace iol
 		g->SetViewportFullscreen();
 		g->Clear(vec4(0.0f, 0.0f, 0.0f, 1.0f), ClearFlags_All);
 
+		//------------------------------------
+		// Draw Mesh
+		//------------------------------------
+
 		mat4 viewProj = m_camera->GetViewProjectionMatrix();
-		m_uniformData.mvp = viewProj;
-		g->SetUniformBufferData(m_uniformBuffer, &m_uniformData, sizeof(m_uniformData));
+		m_uniformDataMatrices.mvp = viewProj;
+		g->SetUniformBufferData(m_uniformBufferMatrices, &m_uniformDataMatrices, sizeof(m_uniformDataMatrices));
 
-		g->SetVertexBufferData(m_vertexBuffer, m_vertices, sizeof(VertexPosUV) * m_vertexCount);
+		g->SetVertexBufferData(m_vertexBufferPosUV, m_verticesPosUV, sizeof(*m_verticesPosUV) * m_vertexCount);
+		g->SetVertexBufferData(m_vertexBufferPos, m_verticesPos, sizeof(*m_verticesPos) * m_vertexCount);
 
-		const UniformBuffer* ubs[] = { m_uniformBuffer };
-		g->BindUniformBuffer(ubs, iol_countof(ubs));
-		g->BindVertexArray(m_vertexArray);
+		g->SetIndexBufferData(m_indexBuffer, m_mesh.indices.pData, m_mesh.indices.count);
+
+		const UniformBuffer* ubsMVPTexture[] = { m_uniformBufferMatrices };
+		g->BindUniformBuffer(ubsMVPTexture, iol_countof(ubsMVPTexture));
+		g->BindVertexArray(m_vertexArrayMVPTexture);
 		g->BindTexture(0, (const Texture**)&m_texture, 1);
 
 		g->DrawIndexed(g->GetIndexBufferNumIndices(m_indexBuffer));
+
+		//------------------------------------
+		// Draw Terrain Selection
+		//------------------------------------
+
+		if (m_selectedIndices.count > 0)
+		{
+			g->Clear(vec4(0.0f, 0.0f, 0.0f, 1.0f), ClearFlags_Depth);
+
+			g->SetPipelineState(m_pipelineStateMVPColorWireframe);
+			g->SetIndexBufferData(m_indexBuffer, m_selectedIndices.pData, m_selectedIndices.count);
+
+			m_uniformDataMaterial.color = glm::vec4(0.f, 1.f, 0.f, 1.f);
+			g->SetUniformBufferData(m_uniformBufferMaterial, &m_uniformDataMaterial, sizeof(m_uniformDataMaterial));
+
+			const UniformBuffer* ubsMVPColor[] = {m_uniformBufferMatrices, m_uniformBufferMaterial};
+			g->BindUniformBuffer(ubsMVPColor, iol_countof(ubsMVPColor));
+			g->BindVertexArray(m_vertexArrayMVPColor);
+			g->BindTexture(0, (const Texture**)&m_texture, 1);
+
+			g->DrawIndexed(m_selectedIndices.count);
+		}
+
+		//------------------------------------
+		// Render ImGui
+		//------------------------------------
 
 		ImGui::Begin("Settings");
 

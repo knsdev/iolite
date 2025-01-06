@@ -16,7 +16,14 @@ int main(int argc, char* argv[])
 	params.fixedUPS = 60;
 	params.quitOnEscape = true;
 
-	GameApplication app;
-	Engine::Run(params, &app);
+	{
+		GameApplication app;
+		Engine::Run(params, &app);
+	}
+
+#ifndef IOL_MASTER
+	// Check for memory leaks
+	iol_mem_log_allocations();
+#endif
 }
 
