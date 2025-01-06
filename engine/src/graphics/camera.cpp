@@ -14,21 +14,11 @@ namespace iol
 
 	Camera::Camera(const CameraProp& prop)
 	{
-		SetProp(prop);
+		this->prop = prop;
 	}
 
 	Camera::~Camera()
 	{
-	}
-
-	void Camera::SetProp(const CameraProp& prop)
-	{
-		this->prop = prop;
-	}
-
-	const CameraProp& Camera::GetProp() const
-	{
-		return prop;
 	}
 
 	glm::mat4 Camera::GetViewMatrix() const

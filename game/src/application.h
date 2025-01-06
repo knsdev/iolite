@@ -61,6 +61,11 @@ namespace iol
 
 		Texture* m_texture;
 
+		float m_editRadius = 5.0f;
+		const float m_editRadiusMin = 1.0f;
+		const float m_editRadiusMax = 15.0f;
+		const float m_editRadiusScrollSpeed = 20.0f;
+
 		TerrainEditState m_editState = TerrainEditState_Initial;
 		glm::vec2 m_startMousePos;
 		glm::vec3 m_startHitPoint;

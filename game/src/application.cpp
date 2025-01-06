@@ -13,18 +13,10 @@ namespace iol
 		// Create Camera
 		//------------------------------------
 
-		CameraProp prop;
-		prop.projectionType = ProjectionType::Perspective;
-		prop.aspectRatio = 16.0f / 9.0f;
-		prop.orthographicSize = 1.0f;
-		prop.fieldOfViewDegrees = 60.0f;
-		prop.nearPlane = 0.01f;
-		prop.farPlane = 1000.0f;
-
 		vec3 cameraStartPos = vec3(0.0f, 3.0f, 0.0f);
 		vec3 cameraLookDir = vec3(1.0f, -0.5f, -1.0f);
 
-		m_camera = new Camera(prop);
+		m_camera = new Camera();
 		m_cameraFlying = new CameraFlying(&m_camera->transform, cameraStartPos, cameraLookDir);
 		
 		CameraFlyingProp camFlyProp;
@@ -144,7 +136,7 @@ namespace iol
 	{
 		GraphicsSystem* g = m_graphicsSystem;
 
-		CameraProp camProp = m_camera->GetProp();
+		CameraProp& camProp = m_camera->prop;
 
 		if (input_GetKeyState(IOL_SCANCODE_E) == KeyState_Holding)
 		{
@@ -157,15 +149,16 @@ namespace iol
 			camProp.orthographicSize -= 1.0f * deltaTime;
 		}
 
-		m_camera->SetProp(camProp);
 		m_cameraFlying->Update(deltaTime);
-
-		const float radius = 5.0f;
 
 		KeyState leftMouseBtnState = input_GetMouseButtonState(MouseButton_Left);
 		vec2 mousePos = input_GetMousePosition();
 		float screenWidth = g->GetScreenWidth();
 		float screenHeight = g->GetScreenHeight();
+		vec2 mouseScrollDelta = input_GetMouseScrollDelta();
+
+		m_editRadius -= mouseScrollDelta.y * deltaTime * m_editRadiusScrollSpeed;
+		m_editRadius = Clamp(m_editRadius, m_editRadiusMin, m_editRadiusMax);
 
 		switch (m_editState)
 		{
@@ -188,7 +181,7 @@ namespace iol
 					m_editState = TerrainEditState_DragHeight;
 					m_selectedIndices.Create(30000);
 
-					if (m_mesh.GetTrianglesInRadius(hitPoint, radius, m_selectedIndices))
+					if (m_mesh.GetTrianglesInRadius(hitPoint, m_editRadius, m_selectedIndices))
 					{
 						m_selectedOriginalPositions.Create(m_selectedIndices.count);
 						m_selectedOriginalDistances.Create(m_selectedIndices.count);
@@ -217,7 +210,7 @@ namespace iol
 				{
 					uint32 vertexIndex = m_selectedIndices[i];
 
-					float percent = m_selectedOriginalDistances[i] / radius;
+					float percent = m_selectedOriginalDistances[i] / m_editRadius;
 					percent = Clamp(1.0f - percent, 0.0f, 0.9f);
 					float finalHeightDiff = heightDiff * percent;
 
@@ -234,14 +227,14 @@ namespace iol
 			break;
 		}
 
-		m_perlinOffsetX += 2.0f * deltaTime;
+		/*m_perlinOffsetX += 2.0f * deltaTime;
 		m_mesh.SetTerrainHeightPerlin(0.0f, 6.0f, 0.2f, m_perlinOffsetX, 0.0f);
 
 		for (size_t i = 0; i < m_vertexCount; i++)
 		{
 			m_vertices[i].pos = m_mesh.positions[i];
 			m_vertices[i].uv = m_mesh.uvs[i];
-		}
+		}*/
 
 		Render(deltaTime);
 	}
@@ -265,16 +258,23 @@ namespace iol
 
 		g->SetVertexBufferData(m_vertexBuffer, m_vertices, sizeof(VertexPosUV) * m_vertexCount);
 
-		ImGui::Begin("Window 1");
-		ImGui::Text("This is some useful text.");
-		ImGui::End();
-
 		const UniformBuffer* ubs[] = { m_uniformBuffer };
 		g->BindUniformBuffer(ubs, iol_countof(ubs));
 		g->BindVertexArray(m_vertexArray);
 		g->BindTexture(0, (const Texture**)&m_texture, 1);
 
 		g->DrawIndexed(g->GetIndexBufferNumIndices(m_indexBuffer));
+
+		ImGui::Begin("Settings");
+
+		ImGui::PushItemWidth(200.0f);
+
+		ImGui::SliderFloat("Camera Field of View", &m_camera->prop.fieldOfViewDegrees, 10.0f, 90.0f);
+		ImGui::SliderFloat("Terrain Edit Radius", &m_editRadius, m_editRadiusMin, m_editRadiusMax);
+
+		ImGui::PopItemWidth();
+
+		ImGui::End();
 
 		g->EndRender();
 	}

@@ -846,17 +846,14 @@ namespace iol
 	{
 		glFinish();
 
-		ImGuiIO& io = ImGui::GetIO();
-
-		ImGui::Begin("Window 2");
-		ImGui::Text("This is some useful text.");
-		ImGui::End();
-
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
+		ImGuiIO& io = ImGui::GetIO();
+
 		// Update and Render additional Platform Windows
 		// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();

@@ -18,7 +18,7 @@ namespace iol
 	struct CameraProp
 	{
 		ProjectionType projectionType = ProjectionType::Perspective;
-		float fieldOfViewDegrees = 60.0f;
+		float fieldOfViewDegrees = 65.0f;
 		float aspectRatio = 16.0f / 9.0f;
 		float nearPlane = 0.01f;
 		float farPlane = 1000.0f;
@@ -32,16 +32,11 @@ namespace iol
 		Camera(const CameraProp& prop);
 		~Camera();
 
-		void SetProp(const CameraProp& prop);
-
-		const CameraProp& GetProp() const;
 		glm::mat4 GetViewMatrix() const;
 		glm::mat4 GetProjectionMatrix() const;
 		glm::mat4 GetViewProjectionMatrix() const;
 
 		Transform transform;
-
-	private:
 		CameraProp prop;
 	};
 
