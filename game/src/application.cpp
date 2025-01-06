@@ -1,4 +1,5 @@
 #include "application.h"
+#include "imgui.h"
 
 using namespace glm;
 
@@ -254,15 +255,19 @@ namespace iol
 			m_currentPipelineStateIndex = (m_currentPipelineStateIndex + 1) % m_pipelineStates.count;
 		}
 
+		g->BeginRender(m_pipelineStates[m_currentPipelineStateIndex]);
+		g->SetViewportFullscreen();
+		g->Clear(vec4(0.0f, 0.0f, 0.0f, 1.0f), ClearFlags_All);
+
 		mat4 viewProj = m_camera->GetViewProjectionMatrix();
 		m_uniformData.mvp = viewProj;
 		g->SetUniformBufferData(m_uniformBuffer, &m_uniformData, sizeof(m_uniformData));
 
 		g->SetVertexBufferData(m_vertexBuffer, m_vertices, sizeof(VertexPosUV) * m_vertexCount);
 
-		g->BeginRender(m_pipelineStates[m_currentPipelineStateIndex]);
-		g->SetViewportFullscreen();
-		g->Clear(vec4(0.0f, 0.0f, 0.0f, 1.0f), ClearFlags_All);
+		ImGui::Begin("Window 1");
+		ImGui::Text("This is some useful text.");
+		ImGui::End();
 
 		const UniformBuffer* ubs[] = { m_uniformBuffer };
 		g->BindUniformBuffer(ubs, iol_countof(ubs));
@@ -270,12 +275,6 @@ namespace iol
 		g->BindTexture(0, (const Texture**)&m_texture, 1);
 
 		g->DrawIndexed(g->GetIndexBufferNumIndices(m_indexBuffer));
-
-		// Draw second object
-		/*vec3 objectPos = vec3(6.0f, 0.0f, 0.0f);
-		m_uniformData.mvp = viewProj * glm::translate(mat4(1), objectPos);
-		g->SetUniformBufferData(m_uniformBuffer, &m_uniformData, sizeof(m_uniformData));
-		g->DrawIndexed(g->GetIndexBufferNumIndices(m_indexBuffer));*/
 
 		g->EndRender();
 	}

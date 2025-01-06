@@ -36,8 +36,11 @@ namespace iol
 
 		iol_verify(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4) == 0);
 		iol_verify(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2) == 0);
+		const char* glsl_version = "#version 420";
 
 		iol_verify(SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) == 0);
+		iol_verify(SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24) == 0);
+		iol_verify(SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8) == 0);
 		iol_verify(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0) == 0);
 		iol_verify(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0) == 0);
 
@@ -67,10 +70,45 @@ namespace iol
 		gl_SetupDebug();
 #endif
 
+		SDL_GL_MakeCurrent(pSystem->pWindow, pSystem->glContext);
+
 		if (param.vsync)
 			iol_verify(SDL_GL_SetSwapInterval(1) == 0);
 		else
 			iol_verify(SDL_GL_SetSwapInterval(0) == 0);
+		
+		//-------------------------------------
+		// ImGui
+		//-------------------------------------
+
+		// Setup Dear ImGui context
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+		//io.ConfigViewportsNoAutoMerge = true;
+		//io.ConfigViewportsNoTaskBarIcon = true;
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsLight();
+
+		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
+
+		// Setup Platform/Renderer backends
+		ImGui_ImplSDL2_InitForOpenGL(pSystem->pWindow, pSystem->glContext);
+		ImGui_ImplOpenGL3_Init(glsl_version);
+
+		//-------------------------------------
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDisable(GL_CULL_FACE);
@@ -84,6 +122,11 @@ namespace iol
 	void GraphicsSystem::Destroy()
 	{
 		EventSystem::RemoveListener(EventType_WindowResize, GraphicsSystem::HandleEvent, m_data);
+		
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplSDL2_Shutdown();
+		ImGui::DestroyContext();
+		
 		SDL_GL_DeleteContext(m_data->glContext);
 		delete m_data;
 	}
@@ -785,12 +828,44 @@ namespace iol
 
 	void GraphicsSystem::BeginRender(const GraphicsPipelineState* pPipelineState)
 	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL2_NewFrame();
+		ImGui::NewFrame();
+
 		GraphicsSystem::SetPipelineState(pPipelineState);
+
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::DockSpaceOverViewport(0, viewport, ImGuiDockNodeFlags_PassthruCentralNode, 0);
+
+		ImVec2 viewportSize = viewport->Size;
+		m_data->screenWidth = (uint32)viewportSize.x;
+		m_data->screenHeight = (uint32)viewportSize.y;
 	}
 
 	void GraphicsSystem::EndRender()
 	{
 		glFinish();
+
+		ImGuiIO& io = ImGui::GetIO();
+
+		ImGui::Begin("Window 2");
+		ImGui::Text("This is some useful text.");
+		ImGui::End();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		// Update and Render additional Platform Windows
+		// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+			SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+		}
+
 		SDL_GL_SwapWindow(m_data->pWindow);
 	}
 
@@ -884,7 +959,7 @@ namespace iol
 		vp.topLeftY = 0;
 		vp.width = GraphicsSystem::GetScreenWidth();
 		vp.height = GraphicsSystem::GetScreenHeight();
-		GraphicsSystem::SetViewport(vp);
+		SetViewport(vp);
 	}
 
 	void GraphicsSystem::SetPipelineState(const GraphicsPipelineState* pPipelineState)

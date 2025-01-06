@@ -10,6 +10,10 @@
 #include <thread>
 #include <chrono>
 
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
+
 namespace iol::Engine
 {
 	struct EngineData
@@ -124,6 +128,8 @@ namespace iol::Engine
 
 		while (SDL_PollEvent(&evtSDL))
 		{
+			ImGui_ImplSDL2_ProcessEvent(&evtSDL);
+
 			switch (evtSDL.type)
 			{
 			case SDL_KEYDOWN:
