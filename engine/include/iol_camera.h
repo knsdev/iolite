@@ -55,14 +55,13 @@ namespace iol
 		~CameraFlying();
 
 		void Update(float deltaTime);
-		void SetProp(const CameraFlyingProp& prop);
 
-		const CameraFlyingProp& GetProp() const;
 		Transform* GetTransform() const;
+
+		CameraFlyingProp prop;
 
 	private:
 		Transform* transform;
-		CameraFlyingProp prop;
 		glm::ivec2 mouseLastPos;
 		bool mouseFirstInput;
 	};

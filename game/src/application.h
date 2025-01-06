@@ -21,6 +21,12 @@ namespace iol
 		glm::vec4 color;
 	};
 
+	enum TerrainEditToolType
+	{
+		TerrainEditToolType_DragHeight,
+		TerrainEditToolType_Flatten
+	};
+
 	enum TerrainEditState
 	{
 		TerrainEditState_Initial,
@@ -70,16 +76,19 @@ namespace iol
 		Texture* m_texture;
 
 		float m_editRadius = 5.0f;
-		const float m_editRadiusMin = 1.0f;
-		const float m_editRadiusMax = 15.0f;
-		const float m_editRadiusScrollSpeed = 20.0f;
+		static constexpr float m_editRadiusMin = 1.0f;
+		static constexpr float m_editRadiusMax = 15.0f;
+		static constexpr float m_editRadiusScrollSpeed = 20.0f;
 
+		TerrainEditToolType m_toolType = TerrainEditToolType_DragHeight;
 		TerrainEditState m_editState = TerrainEditState_Initial;
 		glm::vec2 m_startMousePos;
 		glm::vec3 m_startHitPoint;
 		Array<uint32> m_selectedIndices;
 		Array<glm::vec3> m_selectedOriginalPositions;
 		Array<float> m_selectedOriginalDistances;
+
+		float m_flattenDesiredHeight;
 
 		float m_perlinOffsetX;
 	};

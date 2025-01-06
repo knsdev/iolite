@@ -9,6 +9,8 @@ namespace iol
 	{
 		GraphicsSystem* g = m_graphicsSystem;
 
+		m_flattenDesiredHeight = FLT_MAX;
+
 		//------------------------------------
 		// Create Camera
 		//------------------------------------
@@ -17,12 +19,10 @@ namespace iol
 		vec3 cameraLookDir = vec3(1.0f, -0.5f, -1.0f);
 
 		m_camera = new Camera();
+
 		m_cameraFlying = new CameraFlying(&m_camera->transform, cameraStartPos, cameraLookDir);
-		
-		CameraFlyingProp camFlyProp;
-		camFlyProp.mouseButtonToRotateCamera = MouseButton_Right;
-		camFlyProp.speed = 6.0f;
-		m_cameraFlying->SetProp(camFlyProp);
+		m_cameraFlying->prop.mouseButtonToRotateCamera = MouseButton_Right;
+		m_cameraFlying->prop.speed = 10.0f;
 
 		//------------------------------------
 		// Load Shader
@@ -198,6 +198,9 @@ namespace iol
 		m_editRadius -= mouseScrollDelta.y * deltaTime * m_editRadiusScrollSpeed;
 		m_editRadius = Clamp(m_editRadius, m_editRadiusMin, m_editRadiusMax);
 
+		if (m_toolType != TerrainEditToolType_Flatten)
+			m_flattenDesiredHeight = FLT_MAX;
+
 		switch (m_editState)
 		{
 		case TerrainEditState_Initial:
@@ -215,25 +218,52 @@ namespace iol
 				if (RayIntersectsMesh(rayOrigin, rayDir, m_mesh, distance, hitPoint, hitTriangleIndices))
 				{
 					m_selectedIndices.Create(30000);
-					m_mesh.GetTrianglesInRadius(hitPoint, m_editRadius, m_selectedIndices);
 
-					if (leftMouseBtnState == KeyState_Pressed)
+					if (m_toolType == TerrainEditToolType_DragHeight)
 					{
-						m_editState = TerrainEditState_DragHeight;
-						m_startMousePos = mousePos;
-						m_startHitPoint = hitPoint;
+						m_mesh.GetTrianglesInRadius(hitPoint, m_editRadius, m_selectedIndices);
 
-						m_selectedOriginalPositions.Create(m_selectedIndices.count);
-						m_selectedOriginalDistances.Create(m_selectedIndices.count);
-
-						for (size_t i = 0; i < m_selectedIndices.count; i++)
+						if (leftMouseBtnState == KeyState_Pressed)
 						{
-							uint32 vertexIndex = m_selectedIndices[i];
-							vec3 origPos = m_mesh.positions[vertexIndex];
-							float origDistance = glm::length(hitPoint - origPos);
+							m_editState = TerrainEditState_DragHeight;
+							m_startMousePos = mousePos;
+							m_startHitPoint = hitPoint;
 
-							m_selectedOriginalPositions.PushBack(origPos);
-							m_selectedOriginalDistances.PushBack(origDistance);
+							m_selectedOriginalPositions.Create(m_selectedIndices.count);
+							m_selectedOriginalDistances.Create(m_selectedIndices.count);
+
+							for (size_t i = 0; i < m_selectedIndices.count; i++)
+							{
+								uint32 vertexIndex = m_selectedIndices[i];
+								vec3 origPos = m_mesh.positions[vertexIndex];
+								float origDistance = glm::length(hitPoint - origPos);
+
+								m_selectedOriginalPositions.PushBack(origPos);
+								m_selectedOriginalDistances.PushBack(origDistance);
+							}
+						}
+					}
+					else if (m_toolType == TerrainEditToolType_Flatten)
+					{
+						m_mesh.GetTrianglesInRadiusIgnoreHeight(hitPoint, m_editRadius, m_selectedIndices);
+
+						if (leftMouseBtnState == KeyState_Pressed || leftMouseBtnState == KeyState_Holding)
+						{
+							if (m_flattenDesiredHeight == FLT_MAX)
+								m_flattenDesiredHeight = hitPoint.y;
+
+							for (size_t i = 0; i < m_selectedIndices.count; i++)
+							{
+								uint32 vertexIndex = m_selectedIndices[i];
+
+								m_verticesPos[vertexIndex].y = m_flattenDesiredHeight;
+								m_verticesPosUV[vertexIndex].pos.y = m_flattenDesiredHeight;
+								m_mesh.positions[vertexIndex].y = m_flattenDesiredHeight;
+							}
+						}
+						else
+						{
+							m_flattenDesiredHeight = FLT_MAX;
 						}
 					}
 				}
@@ -346,7 +376,16 @@ namespace iol
 		ImGui::PushItemWidth(200.0f);
 
 		ImGui::SliderFloat("Camera Field of View", &m_camera->prop.fieldOfViewDegrees, 10.0f, 90.0f);
+		ImGui::SliderFloat("Camera Speed", &m_cameraFlying->prop.speed, 1.0f, 30.0f);
 		ImGui::SliderFloat("Terrain Edit Radius", &m_editRadius, m_editRadiusMin, m_editRadiusMax);
+
+		static const char* s_terrainEditToolTypeNames[] = {
+			"DragHeight",
+			"Flatten"
+		};
+
+		const char* terrainToolName = s_terrainEditToolTypeNames[(int)m_toolType];
+		ImGui::SliderInt("Terrain Tool", (int*)&m_toolType, 0, 1, terrainToolName);
 
 		ImGui::PopItemWidth();
 

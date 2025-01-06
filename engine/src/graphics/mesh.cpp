@@ -546,4 +546,35 @@ namespace iol
 
 		return outIndices.count > 0;
 	}
+
+	bool Mesh::GetTrianglesInRadiusIgnoreHeight(glm::vec3 pos, float radius, Array<uint32>& outIndices)
+	{
+		float radiusSqr = radius * radius;
+		pos.y = 0.f;
+
+		for (size_t i = 0; i < indices.count; i += 3)
+		{
+			if (outIndices.count + 3 >= outIndices.capacity)
+			{
+				iol_log_error("outIndices.capacity is too low!");
+				return true;
+			}
+
+			vec3 v0 = positions[indices[i]];
+			vec3 v1 = positions[indices[i + 1]];
+			vec3 v2 = positions[indices[i + 2]];
+
+			vec3 center = (v0 + v1 + v2) / 3.0f;
+			center.y = 0.f;
+
+			if (glm::length2(center - pos) < radiusSqr)
+			{
+				outIndices.PushBack(indices[i]);
+				outIndices.PushBack(indices[i + 1]);
+				outIndices.PushBack(indices[i + 2]);
+			}
+		}
+
+		return outIndices.count > 0;
+	}
 }

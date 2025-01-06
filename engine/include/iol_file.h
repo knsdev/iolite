@@ -37,14 +37,14 @@ namespace iol
 		Returns a newly allocated buffer with read file size bytes.
 		Writes the read file size into 'pOutFileSize'.
 		You can increase the buffer size by setting 'extraBufferSize' > 0.
-		'pOutFileSize' is not affected by 'additionalBufferSize'.
+		'outFileSize' is not affected by 'additionalBufferSize'.
 		Make sure to free the buffer when you're done!
 	*/
 	IOL_API void*	file_ReadAll(const char* filePath, size_t* outFileSize, size_t extraBufferSize);
 
 	/*
 		Returns a newly allocated buffer with read file size + 1 byte for the termination character.
-		'pOutFileSize' is without the +1 for the termination character.
+		'outFileSize' is without the +1 for the termination character.
 		See 'file_read_all'.
 	*/
 	IOL_API char*	file_ReadAllText(const char* filePath, size_t* outFileSize, size_t extraBufferSize);

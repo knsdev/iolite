@@ -7,13 +7,13 @@ using namespace glm;
 
 namespace iol
 {
-	CameraFlying::CameraFlying(Transform* transform, const glm::vec3 position, const glm::vec3 forward)
+	CameraFlying::CameraFlying(Transform* transform, const vec3 position, const vec3 forward)
 	{
 		this->mouseLastPos = { 0, 0 };
 		this->mouseFirstInput = true;
 
 		transform->position = position;
-		transform->scale = glm::vec3(1.0f);
+		transform->scale = vec3(1.0f);
 		transform->SetForward(forward);
 		this->transform = transform;
 	}
@@ -66,16 +66,6 @@ namespace iol
 		}
 
 		transform->position = position;
-	}
-
-	void CameraFlying::SetProp(const CameraFlyingProp& prop)
-	{
-		this->prop = prop;
-	}
-
-	const CameraFlyingProp& CameraFlying::GetProp() const
-	{
-		return this->prop;
 	}
 
 	Transform* CameraFlying::GetTransform() const
