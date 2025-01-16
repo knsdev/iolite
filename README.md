@@ -2,8 +2,6 @@
 
 **iolite** is a simple and lightweight 3D game engine written in C++ with OpenGL. It includes a basic terrain editor, allowing you to create and modify 3D landscapes.  
 
----
-
 ## Features
 
 - 3D rendering with OpenGL
@@ -17,8 +15,6 @@ This project is a work in progress.
 ![terrain_01.png](screenshots/terrain_01.png)
 
 ![terrain_02.png](screenshots/terrain_02.png)
-
-<br />
 
 ---
 
@@ -68,3 +64,21 @@ In Visual Studio, set the game project as the startup project:
 
 5. **Build and Run**  
    Press F5 in Visual Studio to build and run the game application.  
+
+---
+
+## Controls
+
+- **Camera Controls**
+    - **Rotation**: Hold the Right Mouse Button and move the mouse
+    - **Directional Movement**: WASD
+    - **Move Up**: Space
+    - **Move Down**: Shift
+
+- **Terrain Controls**
+    - Set the Terrain Tool to **DragHeight** in the Settings window. Hold the Left Mouse Button and move the mouse up/down to adjust the terrain height.
+    - Set the Terrain Tool to **Flatten** in the Settings window. Hold the Left Mouse Button and move the mouse over the terrain to flatten it.
+
+- **Toggle Wireframe Mode**
+    - Press **Tab** to toggle wireframe mode
+
