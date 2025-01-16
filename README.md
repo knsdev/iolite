@@ -78,6 +78,7 @@ In Visual Studio, set the game project as the startup project:
 - **Terrain Controls**
     - Set the Terrain Tool to **DragHeight** in the Settings window. Hold the Left Mouse Button and move the mouse up/down to adjust the terrain height.
     - Set the Terrain Tool to **Flatten** in the Settings window. Hold the Left Mouse Button and move the mouse over the terrain to flatten it.
+    - Scroll up to decrease and down to increase the **Terrain Edit Radius**.
 
 - **Toggle Wireframe Mode**
     - Press **Tab** to toggle wireframe mode
