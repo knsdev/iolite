@@ -109,15 +109,15 @@ namespace iol
 				if (prev)
 					prev->pNext = current->pNext;
 
-				iol_free(current);
-
 				if (!prev && !current->pNext)
 				{
 					m_lists[listIndex] = nullptr;
 				}
 
+				iol_free(current);
 				iol_assert(m_count > 0);
 				m_count--;
+
 				return true;
 			}
 

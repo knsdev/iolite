@@ -226,55 +226,57 @@ namespace iol
 		GraphicsSystem() {}
 		~GraphicsSystem() {}
 
-		bool							Create(const GraphicsSystemParam& param);
-		void							Destroy();
+		bool                     Create(const GraphicsSystemParam& param);
+		void                     Destroy();
 
-		static void						HandleEvent(const Event& evt, void* userData);
+		static void              HandleEvent(const Event& evt, void* userData);
 
-		uint32							GetScreenWidth();
-		uint32							GetScreenHeight();
-		float							GetScreenAspectRatio();
+		uint32                   GetScreenWidth();
+		uint32                   GetScreenHeight();
+		float                    GetScreenAspectRatio();
 
-		GraphicsPipelineState*			CreatePipelineState(const GraphicsPipeLineStateParam& param);
-		void							DestroyPipelineState(GraphicsPipelineState* pPipelineState);
+		GraphicsPipelineState*   CreatePipelineState(const GraphicsPipeLineStateParam& param);
+		void                     DestroyPipelineState(GraphicsPipelineState* pPipelineState);
 
-		void							BeginRender(const GraphicsPipelineState* pPipelineState);
-		void							EndRender();
-		void							Clear(const glm::vec4& color, ClearFlags clearFlags);
-		void							Draw(size_t startVertexIndex, size_t numVertices);
-		void							DrawIndexed(size_t numIndices);
-		void							DrawInstanced(size_t startVertexIndex, size_t numVertices, size_t numInstances);
-		void							DrawIndexedInstanced(size_t numIndices, size_t numInstances);
-		void							BindVertexArray(const VertexArray* pVertexArray);
-		void							BindUniformBuffer(const UniformBuffer** pBuffers, size_t numBuffers);
-		void							BindTexture(size_t startSlot, const Texture** pTextures, size_t numTextures);
-		void							SetViewport(const ViewportData& data);
-		void							SetViewportFullscreen();
-		void							SetPipelineState(const GraphicsPipelineState* pPipelineState);
+		void                     BeginRender(const GraphicsPipelineState* pPipelineState);
+		void                     EndRender();
+		void                     Clear(const glm::vec4& color, ClearFlags clearFlags);
+		void                     Draw(size_t startVertexIndex, size_t numVertices);
+		void                     DrawIndexed(size_t numIndices);
+		void                     DrawInstanced(size_t startVertexIndex, size_t numVertices, size_t numInstances);
+		void                     DrawIndexedInstanced(size_t numIndices, size_t numInstances);
+		void                     BindVertexArray(const VertexArray* pVertexArray);
+		void                     BindUniformBuffer(const UniformBuffer** pBuffers, size_t numBuffers);
+		void                     BindTexture(size_t startSlot, const Texture** pTextures, size_t numTextures);
+		void                     SetViewport(const ViewportData& data);
+		void                     SetViewportFullscreen();
+		void                     SetPipelineState(const GraphicsPipelineState* pPipelineState);
 
-		Shader*							CreateShader(const char* pSourceCode);
-		Shader*							CreateShaderFromFile(const char* pFilePath);
-		void							DestroyShader(Shader* pShader);
+		Shader*                  CreateShader(const char* pSourceCode);
+		Shader*                  CreateShaderFromFile(const char* pFilePath);
+		void                     DestroyShader(Shader* pShader);
 
 		/* The input-layout object can be reused with any other shader that has an identical input signature. */
-		VertexLayout*					CreateVertexLayout(const Shader* pShader, const VertexAttributeParam* pVertexAttributeParams, size_t numVertexAttributes);
-		void							DestroyVertexLayout(VertexLayout* pVertexLayout);
+		VertexLayout*            CreateVertexLayout(const Shader* pShader, const VertexAttributeParam* pVertexAttributeParams, size_t numVertexAttributes);
+		void                     DestroyVertexLayout(VertexLayout* pVertexLayout);
 
-		VertexBuffer*					CreateVertexBuffer(const void* pVertices, size_t size, BufferUsage usage);
-		void							DestroyVertexBuffer(VertexBuffer* pVertexBuffer);
-		void*							MapVertexBuffer(VertexBuffer* pVertexBuffer, BufferAccess access);
-		void							UnmapVertexBuffer(VertexBuffer* pVertexBuffer);
-		void							SetVertexBufferData(VertexBuffer* pVertexBuffer, const void* pVertices, size_t size);
+		VertexBuffer*            CreateVertexBuffer(const void* pVertices, size_t size, BufferUsage usage);
+		void                     DestroyVertexBuffer(VertexBuffer* pVertexBuffer);
 
-		IndexBuffer*					CreateIndexBuffer(uint32* pIndices, size_t numIndices, BufferUsage usage);
-		void							DestroyIndexBuffer(IndexBuffer* pIndexBuffer);
-		void*							MapIndexBuffer(IndexBuffer* pIndexBuffer, BufferAccess access);
-		void							UnmapIndexBuffer(IndexBuffer* pIndexBuffer);
-		void							SetIndexBufferData(IndexBuffer* pIndexBuffer, uint32* pIndices, size_t numIndices);
-		size_t							GetIndexBufferNumIndices(const IndexBuffer* pIndexBuffer);
+		void*                    MapVertexBuffer(VertexBuffer* pVertexBuffer, BufferAccess access);
+		void                     UnmapVertexBuffer(VertexBuffer* pVertexBuffer);
+		void                     SetVertexBufferData(VertexBuffer* pVertexBuffer, const void* pVertices, size_t size);
 
-		VertexArray*					CreateVertexArray(VertexLayout* pVertexLayout, const VertexBuffer** pVertexBuffers, size_t numVertexBuffers, IndexBuffer* pIndexBuffer);
-		void							DestroyVertexArray(VertexArray* pVertexArray);
+		IndexBuffer*             CreateIndexBuffer(uint32* pIndices, size_t numIndices, BufferUsage usage);
+		void                     DestroyIndexBuffer(IndexBuffer* pIndexBuffer);
+
+		void*                    MapIndexBuffer(IndexBuffer* pIndexBuffer, BufferAccess access);
+		void                     UnmapIndexBuffer(IndexBuffer* pIndexBuffer);
+		void                     SetIndexBufferData(IndexBuffer* pIndexBuffer, uint32* pIndices, size_t numIndices);
+		size_t                   GetIndexBufferNumIndices(const IndexBuffer* pIndexBuffer);
+
+		VertexArray*             CreateVertexArray(VertexLayout* pVertexLayout, const VertexBuffer** pVertexBuffers, size_t numVertexBuffers, IndexBuffer* pIndexBuffer);
+		void                     DestroyVertexArray(VertexArray* pVertexArray);
 
 		/* 'size' must be 16 bytes aligned.
 			'pName' is the name of the uniform in the shader.
@@ -288,18 +290,19 @@ namespace iol
 			} material;
 
 			'pName' would be 'UB_material'. */
-		UniformBuffer*					CreateUniformBuffer(const void* pData, size_t size, BufferUsage usage, const char* pName);
-		void							DestroyUniformBuffer(UniformBuffer* pBuffer);
-		void*							MapUniformBuffer(UniformBuffer* pBuffer, BufferAccess access);
-		void							UnmapUniformBuffer(UniformBuffer* pBuffer);
-		void							SetUniformBufferData(UniformBuffer* pBuffer, const void* pData, size_t size);
+		UniformBuffer*           CreateUniformBuffer(const void* pData, size_t size, BufferUsage usage, const char* pName);
+		void                     DestroyUniformBuffer(UniformBuffer* pBuffer);
 
-		Texture*						CreateTextureFromFile(const char* pFilePath, const TextureParam& param);
-		Texture*						CreateTexture(uint32 width, uint32 height, uint32 color, const TextureParam& param);
-		void							DestroyTexture(Texture* pTexture);
+		void*                    MapUniformBuffer(UniformBuffer* pBuffer, BufferAccess access);
+		void                     UnmapUniformBuffer(UniformBuffer* pBuffer);
+		void                     SetUniformBufferData(UniformBuffer* pBuffer, const void* pData, size_t size);
 
-		RenderTarget*					CreateRenderTarget(uint32 width, uint32 height, RenderTargetFlags flags);
-		void							DestroyRenderTarget(RenderTarget* pRenderTarget);
+		Texture*                 CreateTextureFromFile(const char* pFilePath, const TextureParam& param);
+		Texture*                 CreateTexture(uint32 width, uint32 height, uint32 color, const TextureParam& param);
+		void                     DestroyTexture(Texture* pTexture);
+
+		RenderTarget*            CreateRenderTarget(uint32 width, uint32 height, RenderTargetFlags flags);
+		void                     DestroyRenderTarget(RenderTarget* pRenderTarget);
 
 	private:
 		struct GraphicsSystemData* m_data;

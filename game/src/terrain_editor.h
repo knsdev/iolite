@@ -38,7 +38,7 @@ namespace iol
 		~TerrainEditor();
 
 		/*
-		* Creates the TerrainEditor and loads graphics-related resources.
+		* Initializes the TerrainEditor, loads graphics-related resources and creates the Terrain Mesh.
 		* 
 		* g: GraphicsSystem pointer
 		* size: terrain size, width & depth of the terrain mesh

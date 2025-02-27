@@ -102,19 +102,19 @@ namespace iol
 #endif
 	};
 
-	uint32			gl_ConvertBufferUsage(BufferUsage usage);
-	uint32			gl_ConvertBufferAccess(BufferAccess access);
-	uint32			gl_ConvertVertexType(VertexType type);
-	uint32			gl_GetSizeOfVertexType(VertexType basicType);
-	uint32			gl_ConvertPrimitiveType(PrimitiveType primitiveType);
-	GLuint			gl_CompileShader(GLuint shaderType, const char* pSourceCode);
-	void			gl_SetBlendMode(BlendMode blendMode);
-	uint32			gl_ConvertTextureFilter(TextureFilter filter);
-	Texture*		gl_CreateTexture(int32 width, int32 height, const TextureParam& param, uint32 color, const void* pDataUncompressed);
+	uint32          gl_ConvertBufferUsage(BufferUsage usage);
+	uint32          gl_ConvertBufferAccess(BufferAccess access);
+	uint32          gl_ConvertVertexType(VertexType type);
+	uint32          gl_GetSizeOfVertexType(VertexType basicType);
+	uint32          gl_ConvertPrimitiveType(PrimitiveType primitiveType);
+	GLuint          gl_CompileShader(GLuint shaderType, const char* pSourceCode);
+	void            gl_SetBlendMode(BlendMode blendMode);
+	uint32          gl_ConvertTextureFilter(TextureFilter filter);
+	Texture*        gl_CreateTexture(int32 width, int32 height, const TextureParam& param, uint32 color, const void* pDataUncompressed);
 
 #ifdef IOL_DEBUG
-	void			gl_HandleDebugEvent(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
-	void			gl_SetupDebug();
+	void            gl_HandleDebugEvent(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
+	void            gl_SetupDebug();
 #endif
 }
 

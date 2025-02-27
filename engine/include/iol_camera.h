@@ -54,9 +54,8 @@ namespace iol
 		CameraFlying(Transform* transform, glm::vec3 position, glm::vec3 forward);
 		~CameraFlying();
 
-		void Update(float deltaTime);
-
-		Transform* GetTransform() const;
+		void        Update(float deltaTime);
+		Transform*  GetTransform() const;
 
 		CameraFlyingProp prop;
 

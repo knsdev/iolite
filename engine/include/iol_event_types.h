@@ -5,10 +5,6 @@
 #include "iol_debug.h"
 #include "iol_input_definitions.h"
 
-#ifndef IOL_EVENT_MAX_SIZE
-#define IOL_EVENT_MAX_SIZE 64
-#endif // IOL_EVENT_MAX_SIZE
-
 namespace iol
 {
 	enum WindowResizeType
@@ -108,7 +104,7 @@ namespace iol
 
 	union IOL_API EventData
 	{
-		uint8 raw[IOL_EVENT_MAX_SIZE - sizeof(uint32)];
+		uint8 raw[64];
 		Event_WindowQuit windowQuit;
 		Event_WindowClose windowClose;
 		Event_WindowResize windowResize;

@@ -19,10 +19,10 @@ namespace iol
 		class Iterator
 		{
 		public:
-			bool Increment();
-			bool IsValid() const;
-			TKey& GetKey() const;
-			TValue& GetValue() const;
+			bool     Increment();
+			bool     IsValid() const;
+			TKey&    GetKey() const;
+			TValue&  GetValue() const;
 
 			size_t listIndex;
 			Element* element;
@@ -40,15 +40,15 @@ namespace iol
 		Hashmap(Hashmap&& other) = delete;
 		Hashmap& operator=(Hashmap&& other) = delete;
 
-		void Create(uint32(*hashFunction)(const TKey& key), size_t capacity);
-		void Destroy();
+		void      Create(uint32(*hashFunction)(const TKey& key), size_t capacity);
+		void      Destroy();
 
-		void Add(const TKey& key, const TValue& value);
-		bool Remove(const TKey& key);
-		TValue* Get(const TKey& key) const;
+		void      Add(const TKey& key, const TValue& value);
+		bool      Remove(const TKey& key);
+		TValue*   Get(const TKey& key) const;
 
-		size_t GetCount() const { return m_count; }
-		Iterator GetIterator() const;
+		size_t    GetCount() const { return m_count; }
+		Iterator  GetIterator() const;
 
 	private:
 		uint32(*m_hashFunction)(const TKey& key);

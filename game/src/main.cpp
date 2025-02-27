@@ -23,7 +23,6 @@ int main(int argc, char* argv[])
 
 #ifndef IOL_MASTER
 	// Check for memory leaks
-	iol_mem_log_allocations();
+	memory_log_allocations();
 #endif
 }
-
