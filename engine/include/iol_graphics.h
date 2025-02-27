@@ -220,7 +220,7 @@ namespace iol
 		bool vsync;
 	};
 
-	class IOL_API GraphicsSystem
+	class GraphicsSystem
 	{
 	public:
 		GraphicsSystem() {}

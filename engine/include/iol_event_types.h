@@ -14,67 +14,67 @@ namespace iol
 		WindowResizeType_Minimized
 	};
 
-	struct IOL_API Event_WindowQuit
+	struct Event_WindowQuit
 	{
 	};
 
-	struct IOL_API Event_WindowClose
+	struct Event_WindowClose
 	{
 	};
 
-	struct IOL_API Event_WindowResize
+	struct Event_WindowResize
 	{
 		uint32 newWidth, newHeight;
 		WindowResizeType resizeType;
 	};
 
-	struct IOL_API Event_WindowFocus
+	struct Event_WindowFocus
 	{
 	};
 
-	struct IOL_API Event_WindowLostFocus
+	struct Event_WindowLostFocus
 	{
 	};
 
-	struct IOL_API Event_WindowMoved
+	struct Event_WindowMoved
 	{
 		int32 x, y;
 	};
 
-	struct IOL_API Event_KeyPressed
+	struct Event_KeyPressed
 	{
 		ScanCode scanCode; // key based on the physical location on the keyboard. e.g. WASD for character movement. Use IOL_SCANCODE_TO_KEYCODE to get the virtual key code.
 		bool repeated;
 	};
 
-	struct IOL_API Event_KeyReleased
+	struct Event_KeyReleased
 	{
 		ScanCode scanCode; // key based on the physical location on the keyboard. e.g. WASD for character movement. Use IOL_SCANCODE_TO_KEYCODE to get the virtual key code.
 	};
 
-	struct IOL_API Event_KeyTyped
+	struct Event_KeyTyped
 	{
 		uint16 character; // UTF-16
 	};
 
-	struct IOL_API  Event_MouseButtonPressed
+	struct  Event_MouseButtonPressed
 	{
 		MouseButton mouseButton;
 		int32 x, y;
 	};
 
-	struct IOL_API Event_MouseButtonReleased
+	struct Event_MouseButtonReleased
 	{
 		MouseButton mouseButton;
 		int32 x, y;
 	};
 
-	struct IOL_API Event_MouseMoved
+	struct Event_MouseMoved
 	{
 		int32 x, y;
 	};
 
-	struct IOL_API Event_MouseScrolled
+	struct Event_MouseScrolled
 	{
 		int32 dx, dy;
 	};
@@ -102,7 +102,7 @@ namespace iol
 		EventType_Count
 	};
 
-	union IOL_API EventData
+	union EventData
 	{
 		uint8 raw[64];
 		Event_WindowQuit windowQuit;

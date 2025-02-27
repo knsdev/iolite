@@ -6,17 +6,19 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/*
 #ifdef IOL_PLATFORM_WINDOWS
 #	ifdef IOL_BUILD_DLL
-#		define IOL_API //__declspec(dllexport)
+#		define IOL_API __declspec(dllexport)
 #	else
-#		define IOL_API //__declspec(dllimport)
+#		define IOL_API __declspec(dllimport)
 #	endif
 #elif defined(IOL_PLATFORM_LINUX)
 #define IOL_API 
 #else
 #error implement dll stuff for this platform
 #endif
+*/
 
 #define iol_inline inline
 #define iol_bit(x) (1 << (x))

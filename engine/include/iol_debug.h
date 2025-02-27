@@ -9,8 +9,8 @@
 
 namespace iol
 {
-	IOL_API void debug_output_string(const char* pFormat, ...);
-	IOL_API void debug_output_string_to_log_file(const char* pFormat, ...);
+	void debug_output_string(const char* pFormat, ...);
+	void debug_output_string_to_log_file(const char* pFormat, ...);
 }
 
 #if defined(IOL_DEBUG)

@@ -22,7 +22,7 @@ namespace iol
 
 	namespace Engine
 	{
-		IOL_API void Run(const EngineParams& params, Application* app);
+		void Run(const EngineParams& params, Application* app);
 	}
 }
 	

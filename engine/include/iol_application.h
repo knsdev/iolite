@@ -8,7 +8,7 @@ namespace iol
 	struct EngineParams;
 	class GraphicsSystem;
 
-	class IOL_API Application
+	class Application
 	{
 	public:
 		Application() {}

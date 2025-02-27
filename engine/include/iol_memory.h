@@ -20,14 +20,14 @@
 namespace iol
 {
 #ifndef IOL_MASTER
-	IOL_API void    memory_log_allocations();
+	void    memory_log_allocations();
 #endif
 
-	IOL_API void    memory_FillZero(void* pDestination, size_t size);
-	IOL_API void    memory_Fill(void* pDestination, size_t size, int value);
-	IOL_API void    memory_Copy(void* pDestination, size_t size, const void* pSource);
-	IOL_API void    memory_Move(void* pDestination, size_t size, const void* pSource);
-	IOL_API bool    memory_Compare(const void* pFirst, const void* pSecond, size_t size);
+	void    memory_FillZero(void* pDestination, size_t size);
+	void    memory_Fill(void* pDestination, size_t size, int value);
+	void    memory_Copy(void* pDestination, size_t size, const void* pSource);
+	void    memory_Move(void* pDestination, size_t size, const void* pSource);
+	bool    memory_Compare(const void* pFirst, const void* pSecond, size_t size);
 }
 
 #endif // IOLITE_MEMORY_H

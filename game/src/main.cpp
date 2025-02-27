@@ -25,4 +25,6 @@ int main(int argc, char* argv[])
 	// Check for memory leaks
 	memory_log_allocations();
 #endif
+
+	return 0;
 }

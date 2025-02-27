@@ -25,7 +25,7 @@ namespace iol
 		float orthographicSize = 1.0f;
 	};
 
-	class IOL_API Camera
+	class Camera
 	{
 	public:
 		Camera();
@@ -48,7 +48,7 @@ namespace iol
 		MouseButton mouseButtonToRotateCamera = MouseButton_Right;
 	};
 
-	class IOL_API CameraFlying
+	class CameraFlying
 	{
 	public:
 		CameraFlying(Transform* transform, glm::vec3 position, glm::vec3 forward);
