@@ -43,7 +43,7 @@ namespace iol
 
 	void memory_alloc_info_clear(AllocationInfo* pInfo)
 	{
-		memory_FillZero(pInfo, sizeof(*pInfo));
+		memory::FillZero(pInfo, sizeof(*pInfo));
 	}
 
 	AllocationInfo* memory_alloc_info_get_free()
@@ -74,7 +74,7 @@ namespace iol
 	size_t memory_alloc_info_get_all(AllocationInfo* pOutAllocations, size_t outMaxAllocations)
 	{
 		size_t outIndex = 0;
-		size_t maxCount = Min<size_t>(outMaxAllocations, MEMORY_MAX_TRACKED_ALLOCATIONS);
+		size_t maxCount = core::Min<size_t>(outMaxAllocations, MEMORY_MAX_TRACKED_ALLOCATIONS);
 
 		for (size_t i = 0; i < maxCount; ++i)
 		{
@@ -132,7 +132,7 @@ namespace iol
 		memory_free(pMemory);
 	}
 
-	void memory_log_allocations()
+	void memory::log_allocations()
 	{
 		static AllocationInfo s_allocationInfos[MEMORY_MAX_TRACKED_ALLOCATIONS];
 		size_t numAllocations = memory_alloc_info_get_all(s_allocationInfos, iol_countof(s_allocationInfos));
@@ -145,7 +145,7 @@ namespace iol
 
 #endif // !IOL_MASTER
 
-	void memory_FillZero(void* pDestination, size_t size)
+	void memory::FillZero(void* pDestination, size_t size)
 	{
 		iol_assert(pDestination != nullptr);
 		iol_assert(size > 0);
@@ -153,7 +153,7 @@ namespace iol
 		memset(pDestination, 0, size);
 	}
 
-	void memory_Fill(void* pDestination, size_t size, int value)
+	void memory::Fill(void* pDestination, size_t size, int value)
 	{
 		iol_assert(pDestination != nullptr);
 		iol_assert(size > 0);
@@ -161,7 +161,7 @@ namespace iol
 		memset(pDestination, value, size);
 	}
 
-	void memory_Copy(void* pDestination, size_t size, const void* pSource)
+	void memory::Copy(void* pDestination, size_t size, const void* pSource)
 	{
 		iol_assert(pDestination != nullptr);
 		iol_assert(size > 0);
@@ -170,7 +170,7 @@ namespace iol
 		memcpy(pDestination, pSource, size);
 	}
 
-	void memory_Move(void* pDestination, size_t size, const void* pSource)
+	void memory::Move(void* pDestination, size_t size, const void* pSource)
 	{
 		iol_assert(pDestination != nullptr);
 		iol_assert(size > 0);
@@ -179,7 +179,7 @@ namespace iol
 		memmove(pDestination, pSource, size);
 	}
 
-	bool memory_Compare(const void* pFirst, const void* pSecond, size_t size)
+	bool memory::Compare(const void* pFirst, const void* pSecond, size_t size)
 	{
 		iol_assert(pFirst != nullptr);
 		iol_assert(pSecond != nullptr);

@@ -147,14 +147,14 @@ namespace iol
 
 	void TerrainEditor::Update(GraphicsSystem* g, const Camera* camera, float deltaTime)
 	{
-		KeyState leftMouseBtnState = input_GetMouseButtonState(MouseButton_Left);
-		vec2 mousePos = input_GetMousePosition();
+		KeyState leftMouseBtnState = input::GetMouseButtonState(MouseButton_Left);
+		vec2 mousePos = input::GetMousePosition();
 		float screenWidth = g->GetScreenWidth();
 		float screenHeight = g->GetScreenHeight();
-		vec2 mouseScrollDelta = input_GetMouseScrollDelta();
+		vec2 mouseScrollDelta = input::GetMouseScrollDelta();
 
 		m_editRadius -= mouseScrollDelta.y * deltaTime * m_editRadiusScrollSpeed;
-		m_editRadius = Clamp(m_editRadius, m_editRadiusMin, m_editRadiusMax);
+		m_editRadius = core::Clamp(m_editRadius, m_editRadiusMin, m_editRadiusMax);
 
 		if (m_toolType != TerrainEditToolType_Flatten)
 			m_flattenDesiredHeight = FLT_MAX;
@@ -167,13 +167,13 @@ namespace iol
 
 			vec3 rayOrigin;
 			vec3 rayDir;
-			ScreenPointToRay(camera->transform.position, camera->GetViewProjectionMatrix(), mousePos, screenWidth, screenHeight, rayOrigin, rayDir);
+			core::ScreenPointToRay(camera->transform.position, camera->GetViewProjectionMatrix(), mousePos, screenWidth, screenHeight, rayOrigin, rayDir);
 
 			float distance;
 			vec3 hitPoint;
 			Array<uint32> hitTriangleIndices;
 
-			if (RayIntersectsMesh(rayOrigin, rayDir, m_mesh, distance, hitPoint, hitTriangleIndices))
+			if (core::RayIntersectsMesh(rayOrigin, rayDir, m_mesh, distance, hitPoint, hitTriangleIndices))
 			{
 				m_selectedIndices.Create(30000);
 
@@ -239,7 +239,7 @@ namespace iol
 					uint32 vertexIndex = m_selectedIndices[i];
 
 					float percent = m_selectedOriginalDistances[i] / m_editRadius;
-					percent = Clamp(1.0f - percent, 0.0f, 0.9f);
+					percent = core::Clamp(1.0f - percent, 0.0f, 0.9f);
 					float finalHeightDiff = heightDiff * percent;
 
 					m_verticesPos[vertexIndex]
@@ -258,7 +258,7 @@ namespace iol
 			break;
 		}
 
-		if (input_GetKeyState(IOL_SCANCODE_TAB) == KeyState_Pressed)
+		if (input::GetKeyState(IOL_SCANCODE_TAB) == KeyState_Pressed)
 		{
 			if (m_pipelineStateType == TerrainPipelineStateType_MVPTexture)
 				m_pipelineStateType = TerrainPipelineStateType_MVPTextureWireframe;

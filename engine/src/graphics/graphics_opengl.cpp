@@ -67,7 +67,7 @@ namespace iol
 		}
 
 #ifdef IOL_DEBUG
-		gl_SetupDebug();
+		gl::SetupDebug();
 #endif
 
 		SDL_GL_MakeCurrent(pSystem->pWindow, pSystem->glContext);
@@ -114,14 +114,14 @@ namespace iol
 		glDisable(GL_CULL_FACE);
 		glDisable(GL_DEPTH_TEST);
 
-		EventSystem::AddListener(EventType_WindowResize, HandleEvent, m_data);
+		event_system::AddListener(EventType_WindowResize, HandleEvent, m_data);
 
 		return true;
 	}
 
 	void GraphicsSystem::Destroy()
 	{
-		EventSystem::RemoveListener(EventType_WindowResize, GraphicsSystem::HandleEvent, m_data);
+		event_system::RemoveListener(EventType_WindowResize, GraphicsSystem::HandleEvent, m_data);
 		
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplSDL2_Shutdown();
@@ -168,7 +168,7 @@ namespace iol
 		GraphicsPipelineState* state = iol_alloc(GraphicsPipelineState);
 		state->pShader = (Shader*)param.pShader;
 		state->pVertexLayout = (VertexLayout*)param.pVertexLayout;
-		state->primitiveType = gl_ConvertPrimitiveType(param.primitiveType);
+		state->primitiveType = gl::ConvertPrimitiveType(param.primitiveType);
 		state->rasterizerFlags = param.rasterizerFlags;
 		state->blendMode = param.blendMode;
 		state->pipelineFlags = param.pipelineFlags;
@@ -182,7 +182,7 @@ namespace iol
 	}
 
 #ifdef IOL_DEBUG
-	void gl_HandleDebugEvent(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+	void gl::HandleDebugEvent(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 	{
 		const char* severityStr = "";
 
@@ -213,7 +213,7 @@ namespace iol
 		}
 	}
 
-	void gl_SetupDebug()
+	void gl::SetupDebug()
 	{
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
@@ -224,11 +224,11 @@ namespace iol
 		//GLuint ids[] = { 0x20072 };
 		//glDebugMessageControl(0x8246, 0x8250, GL_DONT_CARE, iol_countof(ids), ids, GL_FALSE);
 
-		glDebugMessageCallback(gl_HandleDebugEvent, nullptr);
+		glDebugMessageCallback(gl::HandleDebugEvent, nullptr);
 	}
 #endif
 
-	uint32 gl_ConvertBufferUsage(BufferUsage usage)
+	uint32 gl::ConvertBufferUsage(BufferUsage usage)
 	{
 		uint32 usageGL = 0;
 
@@ -266,7 +266,7 @@ namespace iol
 		return usageGL;
 	}
 
-	uint32 gl_ConvertBufferAccess(BufferAccess access)
+	uint32 gl::ConvertBufferAccess(BufferAccess access)
 	{
 		uint32 bufferAccessGL = 0;
 
@@ -286,7 +286,7 @@ namespace iol
 		return bufferAccessGL;
 	}
 
-	uint32 gl_ConvertVertexType(VertexType type)
+	uint32 gl::ConvertVertexType(VertexType type)
 	{
 		uint32 resultType = 0;
 
@@ -306,7 +306,7 @@ namespace iol
 		return resultType;
 	}
 
-	uint32 gl_GetSizeOfVertexType(VertexType basicType)
+	uint32 gl::GetSizeOfVertexType(VertexType basicType)
 	{
 		switch (basicType)
 		{
@@ -321,7 +321,7 @@ namespace iol
 		return 0;
 	}
 
-	uint32 gl_ConvertPrimitiveType(PrimitiveType primitiveType)
+	uint32 gl::ConvertPrimitiveType(PrimitiveType primitiveType)
 	{
 		switch (primitiveType)
 		{
@@ -340,7 +340,7 @@ namespace iol
 		return 0;
 	}
 
-	void gl_SetBlendMode(BlendMode blendMode)
+	void gl::SetBlendMode(BlendMode blendMode)
 	{
 		switch (blendMode)
 		{
@@ -376,7 +376,7 @@ namespace iol
 
 		glGenBuffers(1, &buffer->id);
 		glBindBuffer(GL_ARRAY_BUFFER, buffer->id);
-		glBufferData(GL_ARRAY_BUFFER, size, pVertices, gl_ConvertBufferUsage(usage));
+		glBufferData(GL_ARRAY_BUFFER, size, pVertices, gl::ConvertBufferUsage(usage));
 
 		return buffer;
 	}
@@ -392,7 +392,7 @@ namespace iol
 	{
 		GLuint id = pVertexBuffer->id;
 		void* pMappedBuffer;
-		pMappedBuffer = glMapNamedBuffer(id, gl_ConvertBufferAccess(access));
+		pMappedBuffer = glMapNamedBuffer(id, gl::ConvertBufferAccess(access));
 
 		return pMappedBuffer;
 	}
@@ -406,7 +406,7 @@ namespace iol
 	void GraphicsSystem::SetVertexBufferData(VertexBuffer* pVertexBuffer, const void* pVertices, size_t size)
 	{
 		void* pMapped = GraphicsSystem::MapVertexBuffer(pVertexBuffer, BufferAccess::Write);
-		memory_Copy(pMapped, size, pVertices);
+		memory::Copy(pMapped, size, pVertices);
 		GraphicsSystem::UnmapVertexBuffer(pVertexBuffer);
 	}
 
@@ -416,7 +416,7 @@ namespace iol
 
 		glGenBuffers(1, &pImpl->id);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pImpl->id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*pIndices) * numIndices, pIndices, gl_ConvertBufferUsage(usage));
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*pIndices) * numIndices, pIndices, gl::ConvertBufferUsage(usage));
 		pImpl->numIndices = numIndices;
 
 		return pImpl;
@@ -433,7 +433,7 @@ namespace iol
 	{
 		GLuint id = pIndexBuffer->id;
 		void* pMappedBuffer;
-		pMappedBuffer = glMapNamedBuffer(id, gl_ConvertBufferAccess(access));
+		pMappedBuffer = glMapNamedBuffer(id, gl::ConvertBufferAccess(access));
 
 		return pMappedBuffer;
 	}
@@ -447,7 +447,7 @@ namespace iol
 	void GraphicsSystem::SetIndexBufferData(IndexBuffer* pIndexBuffer, uint32* pIndices, size_t numIndices)
 	{
 		void* pMapped = GraphicsSystem::MapIndexBuffer(pIndexBuffer, BufferAccess::Write);
-		memory_Copy(pMapped, numIndices * sizeof(uint32), pIndices);
+		memory::Copy(pMapped, numIndices * sizeof(uint32), pIndices);
 		GraphicsSystem::UnmapIndexBuffer(pIndexBuffer);
 	}
 
@@ -466,7 +466,7 @@ namespace iol
 
 		glGenBuffers(1, &pImpl->id);
 		glBindBuffer(GL_UNIFORM_BUFFER, pImpl->id);
-		glBufferData(GL_UNIFORM_BUFFER, size, pData, gl_ConvertBufferUsage(usage));
+		glBufferData(GL_UNIFORM_BUFFER, size, pData, gl::ConvertBufferUsage(usage));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		return pImpl;
@@ -484,7 +484,7 @@ namespace iol
 	{
 		GLuint id = pBuffer->id;
 		void* pMappedBuffer;
-		pMappedBuffer = glMapNamedBuffer(id, gl_ConvertBufferAccess(access));
+		pMappedBuffer = glMapNamedBuffer(id, gl::ConvertBufferAccess(access));
 
 		return pMappedBuffer;
 	}
@@ -498,21 +498,21 @@ namespace iol
 	void GraphicsSystem::SetUniformBufferData(UniformBuffer* pBuffer, const void* pData, size_t size)
 	{
 		void* pMapped = GraphicsSystem::MapUniformBuffer(pBuffer, BufferAccess::Write);
-		memory_Copy(pMapped, size, pData);
+		memory::Copy(pMapped, size, pData);
 		GraphicsSystem::UnmapUniformBuffer(pBuffer);
 	}
 
 	VertexLayout* GraphicsSystem::CreateVertexLayout(const Shader* pShader, const VertexAttributeParam* pVertexAttributeParams, size_t numVertexAttributes)
 	{
 		VertexLayout* pImpl = iol_alloc(VertexLayout);
-		graphicsBase_CreateVertexLayout(&pImpl->base, pVertexAttributeParams, numVertexAttributes, gl_GetSizeOfVertexType);
+		graphics_base::CreateVertexLayout(&pImpl->base, pVertexAttributeParams, numVertexAttributes, gl::GetSizeOfVertexType);
 
 		return pImpl;
 	}
 
 	void GraphicsSystem::DestroyVertexLayout(VertexLayout* pVertexLayout)
 	{
-		graphicsBase_DestroyVertexLayout(&pVertexLayout->base);
+		graphics_base::DestroyVertexLayout(&pVertexLayout->base);
 		iol_free(pVertexLayout);
 	}
 	
@@ -547,7 +547,7 @@ namespace iol
 			glVertexAttribPointer(
 				attribIdx,
 				(GLint)attribute->param.dimension,
-				gl_ConvertVertexType(attribute->param.type),
+				gl::ConvertVertexType(attribute->param.type),
 				GL_FALSE,
 				stride,
 				(const void*)attribute->offset);
@@ -572,7 +572,7 @@ namespace iol
 		iol_free(pVertexArray);
 	}
 
-	GLuint gl_CompileShader(GLuint shaderType, const char* pSourceCode)
+	GLuint gl::CompileShader(GLuint shaderType, const char* pSourceCode)
 	{
 		GLuint shader;
 		shader = glCreateShader(shaderType);
@@ -600,30 +600,30 @@ namespace iol
 		Shader* pShader = iol_alloc(Shader);
 
 		const char* pShaderTypeKey = "#type";
-		size_t shaderTypeKeyLength = string_GetLength(pShaderTypeKey);
+		size_t shaderTypeKeyLength = string::GetLength(pShaderTypeKey);
 
 		const char* shaderTypes[] = { "vertex", "fragment" };
 		const char* pCodeStarts[iol_countof(shaderTypes)];
 		const char* pCodeEnds[iol_countof(shaderTypes)];
 
-		memory_FillZero(pCodeStarts, sizeof(pCodeStarts));
-		memory_FillZero(pCodeEnds, sizeof(pCodeEnds));
+		memory::FillZero(pCodeStarts, sizeof(pCodeStarts));
+		memory::FillZero(pCodeEnds, sizeof(pCodeEnds));
 
 		const char* pCurrent = pSourceCode;
 
 		while (pCurrent && *pCurrent)
 		{
-			pCurrent = string_Find(pCurrent, pShaderTypeKey) + shaderTypeKeyLength;
-			pCurrent = string_Skip(pCurrent, " \t");
+			pCurrent = string::Find(pCurrent, pShaderTypeKey) + shaderTypeKeyLength;
+			pCurrent = string::Skip(pCurrent, " \t");
 
 			for (size_t i = 0; i < iol_countof(shaderTypes); ++i)
 			{
-				if (string_Compare(pCurrent, shaderTypes[i]))
+				if (string::Compare(pCurrent, shaderTypes[i]))
 				{
-					pCurrent = string_GetNextLine(pCurrent);
+					pCurrent = string::GetNextLine(pCurrent);
 					pCodeStarts[i] = pCurrent;
 
-					pCurrent = string_Find(pCurrent, pShaderTypeKey);
+					pCurrent = string::Find(pCurrent, pShaderTypeKey);
 					pCodeEnds[i] = pCurrent;
 					break;
 				}
@@ -636,15 +636,15 @@ namespace iol
 			return nullptr;
 		}
 
-		char* pVertexShaderSource = string_SubstringAlloc(pCodeStarts[0], pCodeEnds[0]);
-		char* pFragmentShaderSource = string_SubstringAlloc(pCodeStarts[1], pCodeEnds[1]);
+		char* pVertexShaderSource = string::SubstringAlloc(pCodeStarts[0], pCodeEnds[0]);
+		char* pFragmentShaderSource = string::SubstringAlloc(pCodeStarts[1], pCodeEnds[1]);
 
 		pShader->programId = glCreateProgram();
 
-		GLuint vertexShader = gl_CompileShader(GL_VERTEX_SHADER, pVertexShaderSource);
+		GLuint vertexShader = gl::CompileShader(GL_VERTEX_SHADER, pVertexShaderSource);
 		iol_assert(vertexShader != (GLuint)-1);
 
-		GLuint fragmentShader = gl_CompileShader(GL_FRAGMENT_SHADER, pFragmentShaderSource);
+		GLuint fragmentShader = gl::CompileShader(GL_FRAGMENT_SHADER, pFragmentShaderSource);
 		iol_assert(fragmentShader != (GLuint)-1);
 
 		glAttachShader(pShader->programId, vertexShader);
@@ -671,14 +671,14 @@ namespace iol
 
 	Shader* GraphicsSystem::CreateShaderFromFile(const char* pFilePath)
 	{
-		char* pShaderSource = file_ReadAllText(pFilePath, nullptr, 0u);
+		char* pShaderSource = file::ReadAllText(pFilePath, nullptr, 0u);
 		Shader* pShader = GraphicsSystem::CreateShader(pShaderSource);
 		iol_free(pShaderSource);
 
 		return pShader;
 	}
 
-	Texture* gl_CreateTexture(int32 width, int32 height, const TextureParam& param, uint32 color, const void* pDataUncompressed)
+	Texture* gl::CreateTexture(int32 width, int32 height, const TextureParam& param, uint32 color, const void* pDataUncompressed)
 	{
 		uint32 format;
 
@@ -766,7 +766,7 @@ namespace iol
 	Texture* GraphicsSystem::CreateTextureFromFile(const char* pFilePath, const TextureParam& param)
 	{
 		size_t size;
-		uint8* pDataCompressed = (uint8*)file_ReadAll(pFilePath, &size, 0u);
+		uint8* pDataCompressed = (uint8*)file::ReadAll(pFilePath, &size, 0u);
 
 		if (pDataCompressed == nullptr)
 		{
@@ -796,7 +796,7 @@ namespace iol
 			return nullptr;
 		}
 
-		Texture* texture = gl_CreateTexture(width, height, param, 0, pDataUncompressed);
+		Texture* texture = gl::CreateTexture(width, height, param, 0, pDataUncompressed);
 		stbi_image_free(pDataUncompressed);
 
 		return texture;
@@ -804,7 +804,7 @@ namespace iol
 
 	Texture* GraphicsSystem::CreateTexture(uint32 width, uint32 height, uint32 color, const TextureParam& param)
 	{
-		return gl_CreateTexture(width, height, param, color, nullptr);
+		return gl::CreateTexture(width, height, param, color, nullptr);
 	}
 
 	void GraphicsSystem::DestroyTexture(Texture* pTexture)
@@ -1018,7 +1018,7 @@ namespace iol
 		if (pSystem->blendMode != pState->blendMode)
 		{
 			pSystem->blendMode = pState->blendMode;
-			gl_SetBlendMode(pState->blendMode);
+			gl::SetBlendMode(pState->blendMode);
 		}
 	}
 }

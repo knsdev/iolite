@@ -20,7 +20,7 @@ namespace iol
 		bool quitOnEscape;
 	};
 
-	namespace Engine
+	namespace engine
 	{
 		void Run(const EngineParams& params, Application* app);
 	}

@@ -8,23 +8,26 @@ namespace iol
 {
 	struct Event;
 
-	void           input_CreateSystem();
-	void           input_DestroySystem();
-	void           input_UpdateSystem(float deltaTime);
-	void           input_HandleEvent(const Event& evt, void* userData);
+	namespace input
+	{
+		void           CreateSystem();
+		void           DestroySystem();
+		void           UpdateSystem(float deltaTime);
+		void           HandleEvent(const Event& evt, void* userData);
 
-	KeyState       input_GetKeyState(ScanCode scanCode);
-	bool           input_IsKeyDown(ScanCode scanCode);
+		KeyState       GetKeyState(ScanCode scanCode);
+		bool           IsKeyDown(ScanCode scanCode);
 
-	KeyState       input_GetMouseButtonState(MouseButton btn);
-	bool           input_IsMouseButtonDown(MouseButton btn);
-	glm::vec2      input_GetMousePosition();
-	glm::vec2      input_GetMouseScrollDelta();
+		KeyState       GetMouseButtonState(MouseButton btn);
+		bool           IsMouseButtonDown(MouseButton btn);
+		glm::vec2      GetMousePosition();
+		glm::vec2      GetMouseScrollDelta();
 
-	/*
-	 * Internal
-	 */
-	MouseButton    input_ConvertMouseButton(uint8 mouseButton);
+		/*
+		 * Internal
+		 */
+		MouseButton    ConvertMouseButton(uint8 mouseButton);
+	}
 }
 
 #endif // IOLITE_INPUT_H

@@ -19,8 +19,11 @@ namespace iol
 		size_t numVertexBuffers;
 	};
 
-	void graphicsBase_CreateVertexLayout(VertexLayoutBase* layout, const VertexAttributeParam* vertexAttributeParams, size_t numVertexAttributes, uint32(*fGetTypeSize)(VertexType type));
-	void graphicsBase_DestroyVertexLayout(VertexLayoutBase* layout);
+	namespace graphics_base
+	{
+		void CreateVertexLayout(VertexLayoutBase* layout, const VertexAttributeParam* vertexAttributeParams, size_t numVertexAttributes, uint32(*fGetTypeSize)(VertexType type));
+		void DestroyVertexLayout(VertexLayoutBase* layout);
+	}
 }
 
 #endif // IOLITE_GRAPHICS_BASE_H

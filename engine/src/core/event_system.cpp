@@ -4,7 +4,7 @@ namespace iol
 {
 	struct EventListener
 	{
-		handleEvent_t callback;
+		HandleEvent_t callback;
 		void* userData;
 
 		bool operator==(const EventListener& other) const
@@ -28,7 +28,7 @@ namespace iol
 
 	static EventSystemData* eventSystem = nullptr;
 
-	void EventSystem::Create(const EventSystemParam& param)
+	void event_system::Create(const EventSystemParam& param)
 	{
 		iol_assert(eventSystem == nullptr);
 
@@ -46,7 +46,7 @@ namespace iol
 		}
 	}
 
-	void EventSystem::Destroy()
+	void event_system::Destroy()
 	{
 		iol_assert(eventSystem);
 
@@ -60,7 +60,7 @@ namespace iol
 		eventSystem = nullptr;
 	}
 
-	void EventSystem::Update(float deltaTime)
+	void event_system::Update(float deltaTime)
 	{
 		while (eventSystem->events.count > 0)
 		{
@@ -76,12 +76,12 @@ namespace iol
 		}
 	}
 
-	void EventSystem::SendEvent(const Event& evt)
+	void event_system::SendEvent(const Event& evt)
 	{
 		eventSystem->events.PushBack(evt);
 	}
 
-	void EventSystem::AddListener(uint32 eventType, handleEvent_t callback, void* userData)
+	void event_system::AddListener(uint32 eventType, HandleEvent_t callback, void* userData)
 	{
 		iol_assert(eventType < eventSystem->listenerMapSize);
 
@@ -92,7 +92,7 @@ namespace iol
 		eventSystem->listenerMap[eventType].PushBack(listener);
 	}
 
-	void EventSystem::RemoveListener(uint32 eventType, handleEvent_t callback, void* userData)
+	void event_system::RemoveListener(uint32 eventType, HandleEvent_t callback, void* userData)
 	{
 		EventListener listener;
 		listener.callback = callback;

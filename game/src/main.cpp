@@ -18,12 +18,12 @@ int main(int argc, char* argv[])
 
 	{
 		GameApplication app;
-		Engine::Run(params, &app);
+		engine::Run(params, &app);
 	}
 
 #ifndef IOL_MASTER
 	// Check for memory leaks
-	memory_log_allocations();
+	memory::log_allocations();
 #endif
 
 	return 0;

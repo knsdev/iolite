@@ -6,13 +6,13 @@
 
 namespace iol
 {
-	char* string_Create(size_t capacity)
+	char* string::Create(size_t capacity)
 	{
 		char* pString = (char*)iol_alloc_raw(capacity);
 		return pString;
 	}
 
-	uint32 string_GetHash(const char* pString)
+	uint32 string::GetHash(const char* pString)
 	{
 		iol_assert(pString);
 
@@ -29,7 +29,7 @@ namespace iol
 		return hash;
 	}
 
-	size_t string_GetLength(const char* pString)
+	size_t string::GetLength(const char* pString)
 	{
 		iol_assert(pString);
 
@@ -42,7 +42,7 @@ namespace iol
 		return length;
 	}
 
-	const char* string_GetNextLine(const char* pString)
+	const char* string::GetNextLine(const char* pString)
 	{
 		while (*pString && *pString != '\n')
 		{
@@ -57,7 +57,7 @@ namespace iol
 		return pString;
 	}
 
-	char* string_GetNextLine(char* pString)
+	char* string::GetNextLine(char* pString)
 	{
 		while (*pString && *pString != '\n')
 		{
@@ -72,7 +72,7 @@ namespace iol
 		return pString;
 	}
 
-	const char* string_Find(const char* pString, const char* pStringToFind)
+	const char* string::Find(const char* pString, const char* pStringToFind)
 	{
 		iol_assert(pString);
 		iol_assert(pStringToFind);
@@ -80,7 +80,7 @@ namespace iol
 		return strstr(pString, pStringToFind);
 	}
 
-	char* string_Find(char* pString, const char* pStringToFind)
+	char* string::Find(char* pString, const char* pStringToFind)
 	{
 		iol_assert(pString);
 		iol_assert(pStringToFind);
@@ -88,7 +88,7 @@ namespace iol
 		return strstr(pString, pStringToFind);
 	}
 
-	const char* string_FindReverse(const char* pString, const char* pStringToFind, size_t skipCount /* = 0 */)
+	const char* string::FindReverse(const char* pString, const char* pStringToFind, size_t skipCount /* = 0 */)
 	{
 		size_t s1len = strlen(pString);
 		size_t s2len = strlen(pStringToFind);
@@ -113,7 +113,7 @@ namespace iol
 		return nullptr;
 	}
 
-	char* string_FindReverse(char* pString, const char* pStringToFind, size_t skipCount /* = 0 */)
+	char* string::FindReverse(char* pString, const char* pStringToFind, size_t skipCount /* = 0 */)
 	{
 		size_t s1len = strlen(pString);
 		size_t s2len = strlen(pStringToFind);
@@ -138,7 +138,7 @@ namespace iol
 		return nullptr;
 	}
 
-	bool string_Contains(const char* pString, const char* pStringToFind)
+	bool string::Contains(const char* pString, const char* pStringToFind)
 	{
 		iol_assert(pString);
 		iol_assert(pStringToFind);
@@ -146,7 +146,7 @@ namespace iol
 		return strstr(pString, pStringToFind) != nullptr;
 	}
 
-	void string_RemoveCharacters(char* pOutStringBuffer, const char* pSourceString, const char* pCharactersToRemove)
+	void string::RemoveCharacters(char* pOutStringBuffer, const char* pSourceString, const char* pCharactersToRemove)
 	{
 		iol_assert(pSourceString);
 		iol_assert(pCharactersToRemove);
@@ -179,7 +179,7 @@ namespace iol
 		pOutStringBuffer[outIndex] = '\0';
 	}
 
-	char* string_ReplaceCharacters(char* pString, const char* pCharactersToReplace, char replacementCharacter)
+	char* string::ReplaceCharacters(char* pString, const char* pCharactersToReplace, char replacementCharacter)
 	{
 		char* pCurrent = pString;
 
@@ -204,7 +204,7 @@ namespace iol
 		return pString;
 	}
 
-	char* string_Copy(char* pStringBuffer, const char* pSourceString, size_t capacity)
+	char* string::Copy(char* pStringBuffer, const char* pSourceString, size_t capacity)
 	{
 		iol_assert(pSourceString);
 		iol_assert(pStringBuffer);
@@ -221,16 +221,16 @@ namespace iol
 		return pStringBuffer;
 	}
 
-	char* string_CopyAlloc(const char* pSourceString)
+	char* string::CopyAlloc(const char* pSourceString)
 	{
-		size_t capacity = string_GetLength(pSourceString) + 1;
-		char* pString = string_Create(capacity);
-		string_Copy(pString, pSourceString, capacity);
+		size_t capacity = string::GetLength(pSourceString) + 1;
+		char* pString = string::Create(capacity);
+		string::Copy(pString, pSourceString, capacity);
 
 		return pString;
 	}
 
-	bool string_Compare(const char* pString0, const char* pString1)
+	bool string::Compare(const char* pString0, const char* pString1)
 	{
 		iol_assert(pString0);
 		iol_assert(pString1);
@@ -247,7 +247,7 @@ namespace iol
 		return true;
 	}
 
-	const char* string_Skip(const char* pString, const char* charsToSkip)
+	const char* string::Skip(const char* pString, const char* charsToSkip)
 	{
 		while (pString && *pString)
 		{
@@ -273,7 +273,7 @@ namespace iol
 		return pString;
 	}
 
-	char* string_Skip(char* pString, const char* charsToSkip)
+	char* string::Skip(char* pString, const char* charsToSkip)
 	{
 		while (pString && *pString)
 		{
@@ -299,38 +299,38 @@ namespace iol
 		return pString;
 	}
 
-	char* string_SubstringAlloc(const char* pStart, const char* pEnd)
+	char* string::SubstringAlloc(const char* pStart, const char* pEnd)
 	{
 		if (pEnd == nullptr)
-			pEnd = pStart + string_GetLength(pStart);
+			pEnd = pStart + string::GetLength(pStart);
 
 		size_t size = pEnd - pStart + 1;
-		char* pResult = string_Create(size);
-		string_Copy(pResult, pStart, size);
+		char* pResult = string::Create(size);
+		string::Copy(pResult, pStart, size);
 
 		return pResult;
 	}
 
-	void string_Substring(const char* pStart, const char* pEnd, char* pOutStringBuffer, size_t capacity)
+	void string::Substring(const char* pStart, const char* pEnd, char* pOutStringBuffer, size_t capacity)
 	{
 		if (pEnd == nullptr)
-			pEnd = pStart + string_GetLength(pStart);
+			pEnd = pStart + string::GetLength(pStart);
 
 		size_t size = pEnd - pStart + 1;
 		iol_assert(size <= capacity);
 
-		string_Copy(pOutStringBuffer, pStart, size);
+		string::Copy(pOutStringBuffer, pStart, size);
 	}
 
-	char* string_ConcatAlloc(const char* pStringA, const char* pStringB)
+	char* string::ConcatAlloc(const char* pStringA, const char* pStringB)
 	{
-		size_t lengthA = string_GetLength(pStringA);
-		size_t lengthB = string_GetLength(pStringB);
+		size_t lengthA = string::GetLength(pStringA);
+		size_t lengthB = string::GetLength(pStringB);
 
 		size_t capacity = lengthA + lengthB + 1;
-		char* pResult = string_Create(capacity);
+		char* pResult = string::Create(capacity);
 
-		string_Copy(pResult, pStringA, capacity);
+		string::Copy(pResult, pStringA, capacity);
 		strncat(pResult, pStringB, capacity);
 
 		return pResult;

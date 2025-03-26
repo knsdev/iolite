@@ -128,7 +128,7 @@ namespace iol
 
 				if (numElementsBehind > 0)
 				{
-					memory_Move(&pData[i], numElementsBehind * sizeof(T), &pData[i + 1]);
+					memory::Move(&pData[i], numElementsBehind * sizeof(T), &pData[i + 1]);
 				}
 
 				count--;
@@ -143,7 +143,7 @@ namespace iol
 		{
 			if (pData[i] == element)
 			{
-				Swap(&pData[i], &pData[count - 1]);
+				core::Swap(&pData[i], &pData[count - 1]);
 				count--;
 			}
 		}
@@ -161,7 +161,7 @@ namespace iol
 
 		if (numElementsBehind > 0)
 		{
-			memory_Move(pElement, numElementsBehind * sizeof(T), pElement + 1);
+			memory::Move(pElement, numElementsBehind * sizeof(T), pElement + 1);
 		}
 
 		count--;
@@ -175,7 +175,7 @@ namespace iol
 		iol_assert(count > 0);
 		iol_assert(pElement >= pData && pElement <= pData + (capacity - 1) * sizeof(T));
 
-		Swap(pElement, pData + count - 1);
+		core::Swap(pElement, pData + count - 1);
 		count--;
 	}
 

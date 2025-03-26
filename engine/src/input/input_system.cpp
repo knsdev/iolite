@@ -17,56 +17,59 @@ namespace iol
 
 	static InputSystem s_input;
 
-	void input_UpdateKeyState(ScanCode scanCode, bool isDown);
-	void input_UpdateMouseButtonState(MouseButton mouseButton, bool isDown);
-
-	void input_CreateSystem()
+	namespace input
 	{
-		EventSystem::AddListener(EventType_KeyPressed, input_HandleEvent, &s_input);
-		EventSystem::AddListener(EventType_KeyReleased, input_HandleEvent, &s_input);
-		EventSystem::AddListener(EventType_MouseButtonPressed, input_HandleEvent, &s_input);
-		EventSystem::AddListener(EventType_MouseButtonReleased, input_HandleEvent, &s_input);
-		EventSystem::AddListener(EventType_MouseMoved, input_HandleEvent, &s_input);
-		EventSystem::AddListener(EventType_MouseScrolled, input_HandleEvent, &s_input);
+		void UpdateKeyState(ScanCode scanCode, bool isDown);
+		void UpdateMouseButtonState(MouseButton mouseButton, bool isDown);
 	}
 
-	void input_DestroySystem()
+	void input::CreateSystem()
 	{
-		EventSystem::RemoveListener(EventType_KeyPressed, input_HandleEvent, &s_input);
-		EventSystem::RemoveListener(EventType_KeyReleased, input_HandleEvent, &s_input);
-		EventSystem::RemoveListener(EventType_MouseButtonPressed, input_HandleEvent, &s_input);
-		EventSystem::RemoveListener(EventType_MouseButtonReleased, input_HandleEvent, &s_input);
-		EventSystem::RemoveListener(EventType_MouseMoved, input_HandleEvent, &s_input);
-		EventSystem::RemoveListener(EventType_MouseScrolled, input_HandleEvent, &s_input);
+		event_system::AddListener(EventType_KeyPressed, input::HandleEvent, &s_input);
+		event_system::AddListener(EventType_KeyReleased, input::HandleEvent, &s_input);
+		event_system::AddListener(EventType_MouseButtonPressed, input::HandleEvent, &s_input);
+		event_system::AddListener(EventType_MouseButtonReleased, input::HandleEvent, &s_input);
+		event_system::AddListener(EventType_MouseMoved, input::HandleEvent, &s_input);
+		event_system::AddListener(EventType_MouseScrolled, input::HandleEvent, &s_input);
 	}
 
-	void input_UpdateSystem(float deltaTime)
+	void input::DestroySystem()
 	{
-		memory_Copy(s_input.keysDownPrev, sizeof(s_input.keysDown), s_input.keysDown);
-		memory_Copy(s_input.mouseButtonsDownPrev, sizeof(s_input.mouseButtonsDown), s_input.mouseButtonsDown);
+		event_system::RemoveListener(EventType_KeyPressed, input::HandleEvent, &s_input);
+		event_system::RemoveListener(EventType_KeyReleased, input::HandleEvent, &s_input);
+		event_system::RemoveListener(EventType_MouseButtonPressed, input::HandleEvent, &s_input);
+		event_system::RemoveListener(EventType_MouseButtonReleased, input::HandleEvent, &s_input);
+		event_system::RemoveListener(EventType_MouseMoved, input::HandleEvent, &s_input);
+		event_system::RemoveListener(EventType_MouseScrolled, input::HandleEvent, &s_input);
+	}
+
+	void input::UpdateSystem(float deltaTime)
+	{
+		memory::Copy(s_input.keysDownPrev, sizeof(s_input.keysDown), s_input.keysDown);
+		memory::Copy(s_input.mouseButtonsDownPrev, sizeof(s_input.mouseButtonsDown), s_input.mouseButtonsDown);
 		s_input.mouseScrollDelta = { 0, 0 };
 	}
 
-	void input_HandleEvent(const Event& evt, void* userData)
+	void input::HandleEvent(const Event& evt, void* userData)
 	{
 		InputSystem* inputSystem = (InputSystem*)userData;
 
 		switch (evt.type)
 		{
 		case EventType_KeyPressed:
-			input_UpdateKeyState(evt.data.keyPressed.scanCode, true);
+			UpdateKeyState(evt.data.keyPressed.scanCode, true);
 			break;
 
 		case EventType_KeyReleased:
-			input_UpdateKeyState(evt.data.keyReleased.scanCode, false);
+			UpdateKeyState(evt.data.keyReleased.scanCode, false);
 			break;
 
 		case EventType_MouseButtonPressed:
-			input_UpdateMouseButtonState(evt.data.mouseButtonPressed.mouseButton, true);
+			UpdateMouseButtonState(evt.data.mouseButtonPressed.mouseButton, true);
 			break;
 
 		case EventType_MouseButtonReleased:
-			input_UpdateMouseButtonState(evt.data.mouseButtonReleased.mouseButton, false);
+			UpdateMouseButtonState(evt.data.mouseButtonReleased.mouseButton, false);
 			break;
 
 		case EventType_MouseMoved:
@@ -84,7 +87,7 @@ namespace iol
 		}
 	}
 
-	enum KeyState input_GetKeyState(ScanCode scanCode)
+	enum KeyState input::GetKeyState(ScanCode scanCode)
 	{
 		KeyState keyState = KeyState_None;
 		int32 i = (int32)scanCode;
@@ -108,12 +111,12 @@ namespace iol
 		return keyState;
 	}
 
-	bool input_IsKeyDown(ScanCode scanCode)
+	bool input::IsKeyDown(ScanCode scanCode)
 	{
 		return s_input.keysDown[(int32)scanCode];
 	}
 
-	KeyState input_GetMouseButtonState(MouseButton btn)
+	KeyState input::GetMouseButtonState(MouseButton btn)
 	{
 		KeyState keyState = KeyState_None;
 		int32 i = (int32)btn;
@@ -137,22 +140,22 @@ namespace iol
 		return keyState;
 	}
 
-	bool input_IsMouseButtonDown(MouseButton btn)
+	bool input::IsMouseButtonDown(MouseButton btn)
 	{
 		return s_input.mouseButtonsDown[(int32)btn];
 	}
 
-	glm::vec2 input_GetMousePosition()
+	glm::vec2 input::GetMousePosition()
 	{
 		return s_input.mousePosition;
 	}
 
-	glm::vec2 input_GetMouseScrollDelta()
+	glm::vec2 input::GetMouseScrollDelta()
 	{
 		return s_input.mouseScrollDelta;
 	}
 
-	MouseButton input_ConvertMouseButton(uint8 mouseButton)
+	MouseButton input::ConvertMouseButton(uint8 mouseButton)
 	{
 		switch (mouseButton)
 		{
@@ -171,12 +174,12 @@ namespace iol
 		}
 	}
 
-	void input_UpdateKeyState(ScanCode scanCode, bool isDown)
+	void input::UpdateKeyState(ScanCode scanCode, bool isDown)
 	{
 		s_input.keysDown[(int32)scanCode] = isDown;
 	}
 
-	void input_UpdateMouseButtonState(MouseButton mouseButton, bool isDown)
+	void input::UpdateMouseButtonState(MouseButton mouseButton, bool isDown)
 	{
 		s_input.mouseButtonsDown[(int32)mouseButton] = isDown;
 	}

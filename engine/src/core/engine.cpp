@@ -15,7 +15,7 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_internal.h"
 
-namespace iol::Engine
+namespace iol
 {
 	struct EngineData
 	{
@@ -27,10 +27,13 @@ namespace iol::Engine
 
 	static EngineData s_engine;
 
-	void PollEvents(bool* quit);
-	void OnKeyPressed(const Event& evt, void* userData);
+	namespace engine
+	{
+		void PollEvents(bool* quit);
+		void OnKeyPressed(const Event& evt, void* userData);
+	}
 
-	void Run(const EngineParams& params, Application* app)
+	void engine::Run(const EngineParams& params, Application* app)
 	{
 		s_engine.params = params;
 
@@ -43,9 +46,9 @@ namespace iol::Engine
 		}
 
 		EventSystemParam eventSystemParam;
-		EventSystem::Create(eventSystemParam);
+		event_system::Create(eventSystemParam);
 
-		input_CreateSystem();
+		input::CreateSystem();
 
 		uint32 windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 
@@ -67,7 +70,7 @@ namespace iol::Engine
 			return;
 		}
 
-		EventSystem::AddListener(EventType_KeyPressed, OnKeyPressed, &s_engine);
+		event_system::AddListener(EventType_KeyPressed, OnKeyPressed, &s_engine);
 
 		app->Create(params);
 
@@ -77,19 +80,19 @@ namespace iol::Engine
 
 		s_engine.quit = false;
 		double fixedTimeStep = 1.0 / params.fixedUPS;
-		double timeFrameStart = GetSeconds();
+		double timeFrameStart = core::GetCurrentTimeSeconds();
 		float dtAccum = 0.0f;
 
 		while (!s_engine.quit)
 		{
 			double lastTime = timeFrameStart;
-			timeFrameStart = GetSeconds();
+			timeFrameStart = core::GetCurrentTimeSeconds();
 			float dt = (float)(timeFrameStart - lastTime);
 			dtAccum += dt;
 
-			input_UpdateSystem(dt);
+			input::UpdateSystem(dt);
 			PollEvents(&s_engine.quit);
-			EventSystem::Update(dt);
+			event_system::Update(dt);
 
 			app->Update(dt);
 
@@ -110,15 +113,15 @@ namespace iol::Engine
 
 		app->Destroy();
 
-		input_DestroySystem();
+		input::DestroySystem();
 		s_engine.graphicsSystem->Destroy();
 		delete s_engine.graphicsSystem;
 		SDL_DestroyWindow(s_engine.window);
 		SDL_Quit();
-		EventSystem::Destroy();
+		event_system::Destroy();
 	}
 
-	void PollEvents(bool* quit)
+	void engine::PollEvents(bool* quit)
 	{
 		SDL_Event evtSDL;
 		Event evt;
@@ -138,13 +141,13 @@ namespace iol::Engine
 				evt.type = EventType_KeyPressed;
 				evt.data.keyPressed.scanCode = (ScanCode)evtSDL.key.keysym.scancode;
 				evt.data.keyPressed.repeated = evtSDL.key.repeat != 0;
-				EventSystem::SendEvent(evt);
+				event_system::SendEvent(evt);
 				break;
 
 			case SDL_KEYUP:
 				evt.type = EventType_KeyReleased;
 				evt.data.keyReleased.scanCode = (ScanCode)evtSDL.key.keysym.scancode;
-				EventSystem::SendEvent(evt);
+				event_system::SendEvent(evt);
 				break;
 
 			case SDL_MOUSEMOTION:
@@ -154,7 +157,7 @@ namespace iol::Engine
 				evt.type = EventType_MouseMoved;
 				evt.data.mouseMoved.x = evtSDL.motion.x;
 				evt.data.mouseMoved.y = evtSDL.motion.y;
-				EventSystem::SendEvent(evt);
+				event_system::SendEvent(evt);
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
@@ -165,18 +168,18 @@ namespace iol::Engine
 				ImGui::ClearActiveID();
 
 				evt.type = EventType_MouseButtonPressed;
-				evt.data.mouseButtonPressed.mouseButton = input_ConvertMouseButton(evtSDL.button.button);
+				evt.data.mouseButtonPressed.mouseButton = input::ConvertMouseButton(evtSDL.button.button);
 				evt.data.mouseButtonPressed.x = evtSDL.button.x;
 				evt.data.mouseButtonPressed.y = evtSDL.button.y;
-				EventSystem::SendEvent(evt);
+				event_system::SendEvent(evt);
 				break;
 
 			case SDL_MOUSEBUTTONUP:
 				evt.type = EventType_MouseButtonReleased;
-				evt.data.mouseButtonReleased.mouseButton = input_ConvertMouseButton(evtSDL.button.button);
+				evt.data.mouseButtonReleased.mouseButton = input::ConvertMouseButton(evtSDL.button.button);
 				evt.data.mouseButtonReleased.x = evtSDL.button.x;
 				evt.data.mouseButtonReleased.y = evtSDL.button.y;
-				EventSystem::SendEvent(evt);
+				event_system::SendEvent(evt);
 				break;
 
 			case SDL_MOUSEWHEEL:
@@ -186,7 +189,7 @@ namespace iol::Engine
 				evt.type = EventType_MouseScrolled;
 				evt.data.mouseScrolled.dx = evtSDL.wheel.x;
 				evt.data.mouseScrolled.dy = evtSDL.wheel.y;
-				EventSystem::SendEvent(evt);
+				event_system::SendEvent(evt);
 				break;
 
 			case SDL_WINDOWEVENT:
@@ -197,7 +200,7 @@ namespace iol::Engine
 					evt.data.windowResize.resizeType = WindowResizeType_Normal;
 					evt.data.windowResize.newWidth = evtSDL.window.data1;
 					evt.data.windowResize.newHeight = evtSDL.window.data2;
-					EventSystem::SendEvent(evt);
+					event_system::SendEvent(evt);
 					break;
 				}
 				break;
@@ -212,7 +215,7 @@ namespace iol::Engine
 		}
 	}
 
-	void OnKeyPressed(const Event& evt, void* userData)
+	void engine::OnKeyPressed(const Event& evt, void* userData)
 	{
 		EngineData* engine = (EngineData*)userData;
 

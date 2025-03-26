@@ -40,12 +40,12 @@ namespace iol
 
 		CameraProp& camProp = m_camera->prop;
 
-		if (input_GetKeyState(IOL_SCANCODE_E) == KeyState_Holding)
+		if (input::GetKeyState(IOL_SCANCODE_E) == KeyState_Holding)
 		{
 			camProp.fieldOfViewDegrees += 10.0f * deltaTime;
 			camProp.orthographicSize += 1.0f * deltaTime;
 		}
-		else if (input_GetKeyState(IOL_SCANCODE_F) == KeyState_Holding)
+		else if (input::GetKeyState(IOL_SCANCODE_F) == KeyState_Holding)
 		{
 			camProp.fieldOfViewDegrees -= 10.0f * deltaTime;
 			camProp.orthographicSize -= 1.0f * deltaTime;

@@ -8,19 +8,19 @@ using namespace glm;
 
 namespace iol
 {
-	size_t Align(size_t value, size_t alignment)
+	size_t core::Align(size_t value, size_t alignment)
 	{
 		iol_assert(IsPowerOfTwo(alignment));
 
 		return (value + alignment - 1) & ~(alignment - 1);
 	}
 
-	bool IsPowerOfTwo(size_t value)
+	bool core::IsPowerOfTwo(size_t value)
 	{
 		return (value & (value - 1)) == 0;
 	}
 
-	double GetSeconds()
+	double core::GetCurrentTimeSeconds()
 	{
 		auto now = std::chrono::high_resolution_clock::now();
 		auto duration = now.time_since_epoch();
@@ -30,7 +30,7 @@ namespace iol
 		return sec;
 	}
 
-	vec3 CreateDirection(float pitch, float yaw)
+	vec3 core::CreateDirection(float pitch, float yaw)
 	{
 		vec3 direction;
 		direction.x = cos(radians(yaw)) * cos(radians(pitch));
@@ -39,7 +39,7 @@ namespace iol
 		return normalize(direction);
 	}
 
-	bool RayIntersectsTriangle(vec3 rayOrigin, vec3 rayDir, vec3 v0, vec3 v1, vec3 v2, float& t, vec3& hitPoint)
+	bool core::RayIntersectsTriangle(vec3 rayOrigin, vec3 rayDir, vec3 v0, vec3 v1, vec3 v2, float& t, vec3& hitPoint)
 	{
 		const float epsilon = 1e-8;
 
@@ -79,7 +79,7 @@ namespace iol
 		return false; // No hit
 	}
 
-	bool RayIntersectsMesh(vec3 rayOrigin, vec3 rayDir, const Mesh& mesh, float& t, vec3& hitPoint, Array<uint32>& hitTriangleIndices)
+	bool core::RayIntersectsMesh(vec3 rayOrigin, vec3 rayDir, const Mesh& mesh, float& t, vec3& hitPoint, Array<uint32>& hitTriangleIndices)
 	{
 		vec3 closestHit;
 		float closestHitDistance = FLT_MAX;
@@ -93,7 +93,7 @@ namespace iol
 
 			float distance;
 			vec3 hit;
-			bool result = RayIntersectsTriangle(rayOrigin, rayDir, v0, v1, v2, distance, hit);
+			bool result = core::RayIntersectsTriangle(rayOrigin, rayDir, v0, v1, v2, distance, hit);
 
 			if (result && distance < closestHitDistance)
 			{
@@ -116,7 +116,7 @@ namespace iol
 		return false;
 	}
 
-	void ScreenPointToRay(glm::vec3 cameraPos, const glm::mat4x4& cameraViewProj, glm::vec2 screenPoint, float screenWidth, float screenHeight, glm::vec3& rayOrigin, glm::vec3& rayDir)
+	void core::ScreenPointToRay(glm::vec3 cameraPos, const glm::mat4x4& cameraViewProj, glm::vec2 screenPoint, float screenWidth, float screenHeight, glm::vec3& rayOrigin, glm::vec3& rayDir)
 	{
 		float xNDC = (2.0f * screenPoint.x) / screenWidth - 1.0f;
 		float yNDC = 1.0f - (2.0f * screenPoint.y) / screenHeight;

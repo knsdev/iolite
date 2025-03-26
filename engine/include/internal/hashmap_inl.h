@@ -27,7 +27,7 @@ namespace iol
 		m_hashFunction = hashFunction;
 		m_numLists = capacity;
 		m_lists = iol_alloc_array(Element*, capacity);
-		memory_FillZero(m_lists, sizeof(Element*) * capacity);
+		memory::FillZero(m_lists, sizeof(Element*) * capacity);
 	}
 
 	template<typename TKey, typename TValue>

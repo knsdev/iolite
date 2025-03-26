@@ -48,7 +48,7 @@ namespace iol
 			|| fileMode == FileMode::BinaryAppend);
 	}
 
-	File* file_Open(const char* pFilePath, FileMode mode)
+	File* file::Open(const char* pFilePath, FileMode mode)
 	{
 #ifdef IOL_PLATFORM_WINDOWS
 #pragma warning ( push )
@@ -68,7 +68,7 @@ namespace iol
 			{
 				// Try to create all directories for the filePath
 				static char s_directoryPath[1024];
-				file_GetDirectoryPath(pFilePath, s_directoryPath, sizeof(s_directoryPath));
+				file::GetDirectoryPath(pFilePath, s_directoryPath, sizeof(s_directoryPath));
 
 #define IOL_MKDIR_CMD_CAPACITY 2048
 				static char mkdirCommand[IOL_MKDIR_CMD_CAPACITY];
@@ -109,7 +109,7 @@ namespace iol
 		return file;
 	}
 
-	void file_Close(File* file)
+	void file::Close(File* file)
 	{
 		if (file->handle != nullptr)
 		{
@@ -120,7 +120,7 @@ namespace iol
 		iol_free(file);
 	}
 
-	size_t file_Read(File* file, void* pBuffer, size_t size)
+	size_t file::Read(File* file, void* pBuffer, size_t size)
 	{
 		iol_assert(pBuffer != nullptr);
 		iol_assert(size > 0);
@@ -132,7 +132,7 @@ namespace iol
 		return numBytesRead;
 	}
 
-	bool file_Write(File* file, const void* pData, size_t size)
+	bool file::Write(File* file, const void* pData, size_t size)
 	{
 		iol_assert(pData != nullptr);
 		iol_assert(size > 0);
@@ -144,7 +144,7 @@ namespace iol
 		return numBytesWritten > 0;
 	}
 
-	size_t file_GetSize(File* file)
+	size_t file::GetSize(File* file)
 	{
 		iol_assert(file_CanReposition(file->mode));
 
@@ -171,7 +171,7 @@ namespace iol
 		return fileSize;
 	}
 
-	bool file_SetPosition(File* file, size_t position)
+	bool file::SetPosition(File* file, size_t position)
 	{
 		iol_assert(file_CanReposition(file->mode));
 
@@ -184,7 +184,7 @@ namespace iol
 		return false;
 	}
 
-	bool file_SetPositionSpecial(File* file, SpecialFilePosition position)
+	bool file::SetPositionSpecial(File* file, SpecialFilePosition position)
 	{
 		iol_assert(file_CanReposition(file->mode));
 
@@ -213,12 +213,12 @@ namespace iol
 		return false;
 	}
 
-	size_t file_GetPosition(const File* file)
+	size_t file::GetPosition(const File* file)
 	{
 		return file->position;
 	}
 
-	bool file_GetDirectoryPath(const char* pFilePath, char* pDirectoryPath, size_t directoryPathSize)
+	bool file::GetDirectoryPath(const char* pFilePath, char* pDirectoryPath, size_t directoryPathSize)
 	{
 		pDirectoryPath[0] = '\0';
 
@@ -252,7 +252,7 @@ namespace iol
 
 			if (pDirectoryEnd != nullptr)
 			{
-				string_Substring(pDirectoryStart, pDirectoryEnd, pDirectoryPath, directoryPathSize);
+				string::Substring(pDirectoryStart, pDirectoryEnd, pDirectoryPath, directoryPathSize);
 				return true;
 			}
 		}
@@ -260,37 +260,37 @@ namespace iol
 		return false;
 	}
 
-	void* file_ReadAll(const char* pFilePath, size_t* pOutFileSize, size_t extraBufferSize)
+	void* file::ReadAll(const char* pFilePath, size_t* pOutFileSize, size_t extraBufferSize)
 	{
 		*pOutFileSize = 0u;
 
-		File* pFile = file_Open(pFilePath, FileMode::BinaryRead);
+		File* pFile = file::Open(pFilePath, FileMode::BinaryRead);
 
 		if (pFile == nullptr)
 			return nullptr;
 
-		size_t size = file_GetSize(pFile);
+		size_t size = file::GetSize(pFile);
 
 		if (size == 0u)
 			return nullptr;
 
 		void* pBuffer = iol_alloc_raw(size + extraBufferSize);
-		size_t bytesRead = file_Read(pFile, pBuffer, size);
+		size_t bytesRead = file::Read(pFile, pBuffer, size);
 
 		*pOutFileSize = bytesRead;
 
-		file_Close(pFile);
+		file::Close(pFile);
 
 		return pBuffer;
 	}
 
-	char* file_ReadAllText(const char* pFilePath, size_t* pOutFileSize, size_t extraBufferSize)
+	char* file::ReadAllText(const char* pFilePath, size_t* pOutFileSize, size_t extraBufferSize)
 	{
 		if (pOutFileSize)
 			*pOutFileSize = 0u;
 
 		size_t bytesRead = 0u;
-		char* pBuffer = (char*)file_ReadAll(pFilePath, &bytesRead, 1u + extraBufferSize);
+		char* pBuffer = (char*)file::ReadAll(pFilePath, &bytesRead, 1u + extraBufferSize);
 
 		if (pBuffer == nullptr)
 			return nullptr;

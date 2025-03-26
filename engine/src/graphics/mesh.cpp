@@ -46,7 +46,7 @@ namespace iol
 
 		bool operator==(const MeshVertexKey& other) const
 		{
-			return memory_Compare(this, &other, sizeof(*this));
+			return memory::Compare(this, &other, sizeof(*this));
 		}
 
 		bool operator!=(const MeshVertexKey& other) const
@@ -347,7 +347,7 @@ namespace iol
 	bool Mesh::LoadObjFile(const char* pFilePath)
 	{
 		size_t fileSize;
-		char* pBuffer = file_ReadAllText(pFilePath, &fileSize, 0u);
+		char* pBuffer = file::ReadAllText(pFilePath, &fileSize, 0u);
 
 		char* pCurrent = pBuffer;
 		char* pEnd = pBuffer + fileSize;

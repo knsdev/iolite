@@ -24,7 +24,7 @@ namespace iol
 
 	void CameraFlying::Update(float deltaTime)
 	{
-		ivec2 mousePos = input_GetMousePosition();
+		ivec2 mousePos = input::GetMousePosition();
 
 		if (this->mouseFirstInput)
 		{
@@ -35,7 +35,7 @@ namespace iol
 		ivec2 mouseDeltaPos = mousePos - this->mouseLastPos;
 		this->mouseLastPos = mousePos;
 
-		if (input_IsMouseButtonDown(prop.mouseButtonToRotateCamera))
+		if (input::IsMouseButtonDown(prop.mouseButtonToRotateCamera))
 		{
 			transform->RotateAxisWorld(world_up, -mouseDeltaPos.x * this->prop.sensitivityHorizontal);
 			transform->RotateAxisLocal(world_right, -mouseDeltaPos.y * this->prop.sensitivityVertical);
@@ -46,21 +46,21 @@ namespace iol
 		vec3 position = transform->position;
 		float step = this->prop.speed * deltaTime;
 
-		if (input_IsKeyDown(IOL_SCANCODE_SPACE))
+		if (input::IsKeyDown(IOL_SCANCODE_SPACE))
 			position.y += step;
-		if (input_IsKeyDown(IOL_SCANCODE_LSHIFT))
+		if (input::IsKeyDown(IOL_SCANCODE_LSHIFT))
 			position.y -= step;
 
-		if (input_IsKeyDown(IOL_SCANCODE_W))
+		if (input::IsKeyDown(IOL_SCANCODE_W))
 			position += forward * step;
-		if (input_IsKeyDown(IOL_SCANCODE_S))
+		if (input::IsKeyDown(IOL_SCANCODE_S))
 			position -= forward * step;
 
-		if (input_IsKeyDown(IOL_SCANCODE_A))
+		if (input::IsKeyDown(IOL_SCANCODE_A))
 		{
 			position -= right * step;
 		}
-		if (input_IsKeyDown(IOL_SCANCODE_D))
+		if (input::IsKeyDown(IOL_SCANCODE_D))
 		{
 			position += right * step;
 		}

@@ -19,16 +19,16 @@ namespace iol
 		size_t maxEventListeners = 512;
 	};
 
-	typedef void(*handleEvent_t)(const Event& evt, void* userData);
+	typedef void(*HandleEvent_t)(const Event& evt, void* userData);
 
-	namespace EventSystem
+	namespace event_system
 	{
 		void Create(const EventSystemParam& param);
 		void Destroy();
 		void Update(float deltaTime);
 		void SendEvent(const Event& evt);
-		void AddListener(uint32 eventType, handleEvent_t callback, void* userData);
-		void RemoveListener(uint32 eventType, handleEvent_t callback, void* userData);
+		void AddListener(uint32 eventType, HandleEvent_t callback, void* userData);
+		void RemoveListener(uint32 eventType, HandleEvent_t callback, void* userData);
 	};
 }
 

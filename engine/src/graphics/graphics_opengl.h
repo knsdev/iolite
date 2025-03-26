@@ -99,23 +99,26 @@ namespace iol
 		const VertexBuffer** pVertexBuffers;
 		size_t numVertexBuffers;
 		IndexBuffer* pIndexBuffer;
-#endif
+#endif // IOL_DEBUG
 	};
 
-	uint32          gl_ConvertBufferUsage(BufferUsage usage);
-	uint32          gl_ConvertBufferAccess(BufferAccess access);
-	uint32          gl_ConvertVertexType(VertexType type);
-	uint32          gl_GetSizeOfVertexType(VertexType basicType);
-	uint32          gl_ConvertPrimitiveType(PrimitiveType primitiveType);
-	GLuint          gl_CompileShader(GLuint shaderType, const char* pSourceCode);
-	void            gl_SetBlendMode(BlendMode blendMode);
-	uint32          gl_ConvertTextureFilter(TextureFilter filter);
-	Texture*        gl_CreateTexture(int32 width, int32 height, const TextureParam& param, uint32 color, const void* pDataUncompressed);
+	namespace gl
+	{
+		uint32        ConvertBufferUsage(BufferUsage usage);
+		uint32        ConvertBufferAccess(BufferAccess access);
+		uint32        ConvertVertexType(VertexType type);
+		uint32        GetSizeOfVertexType(VertexType basicType);
+		uint32        ConvertPrimitiveType(PrimitiveType primitiveType);
+		GLuint        CompileShader(GLuint shaderType, const char* pSourceCode);
+		void          SetBlendMode(BlendMode blendMode);
+		uint32        ConvertTextureFilter(TextureFilter filter);
+		Texture*      CreateTexture(int32 width, int32 height, const TextureParam& param, uint32 color, const void* pDataUncompressed);
 
 #ifdef IOL_DEBUG
-	void            gl_HandleDebugEvent(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
-	void            gl_SetupDebug();
-#endif
+		void          HandleDebugEvent(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
+		void          SetupDebug();
+#endif // IOL_DEBUG
+	}
 }
 
 #endif // GRAPHICS_INTERNAL_OPENGL_H

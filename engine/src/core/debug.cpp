@@ -37,8 +37,8 @@ namespace iol
 
 		size_t stringLength = strnlen(s_debugStringBuffer, sizeof(s_debugStringBuffer));
 
-		File* file = file_Open(s_errorFilePath, FileMode::BinaryAppend);
-		file_Write(file, s_debugStringBuffer, stringLength);
-		file_Close(file);
+		File* file = file::Open(s_errorFilePath, FileMode::BinaryAppend);
+		file::Write(file, s_debugStringBuffer, stringLength);
+		file::Close(file);
 	}
 }

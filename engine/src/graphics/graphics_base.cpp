@@ -3,7 +3,7 @@
 
 namespace iol
 {
-	void graphicsBase_FillVertexAttribute(VertexAttribute* pAttribute, const VertexAttributeParam& param, size_t offset)
+	static void FillVertexAttribute(VertexAttribute* pAttribute, const VertexAttributeParam& param, size_t offset)
 	{
 		pAttribute->param.semantic = param.semantic;
 		pAttribute->param.type = param.type;
@@ -13,7 +13,7 @@ namespace iol
 		pAttribute->offset = offset;
 	}
 
-	void graphicsBase_CreateVertexLayout(VertexLayoutBase* layout, const VertexAttributeParam* attributeParams, size_t numVertexAttributes, uint32(*fGetTypeSize)(VertexType type))
+	void graphics_base::CreateVertexLayout(VertexLayoutBase* layout, const VertexAttributeParam* attributeParams, size_t numVertexAttributes, uint32(*fGetTypeSize)(VertexType type))
 	{
 		iol_assert(attributeParams != nullptr);
 		iol_assert(numVertexAttributes > 0);
@@ -32,20 +32,20 @@ namespace iol
 		layout->numVertexBuffers = highestVertexBufferIndex + 1;
 
 		layout->strides = iol_alloc_array(uint32, layout->numVertexBuffers);
-		memory_FillZero(layout->strides, sizeof(*layout->strides) * layout->numVertexBuffers);
+		memory::FillZero(layout->strides, sizeof(*layout->strides) * layout->numVertexBuffers);
 
 		for (size_t i = 0; i < numVertexAttributes; i++)
 		{
 			size_t vertexBufferIndex = attributeParams[i].vertexBufferIndex;
 
-			graphicsBase_FillVertexAttribute(&layout->vertexAttributes[i], attributeParams[i], layout->strides[vertexBufferIndex]);
+			FillVertexAttribute(&layout->vertexAttributes[i], attributeParams[i], layout->strides[vertexBufferIndex]);
 
 			uint32 sizeOfType = fGetTypeSize(layout->vertexAttributes[i].param.type);
 			layout->strides[vertexBufferIndex] += attributeParams[i].dimension * sizeOfType;
 		}
 	}
 
-	void graphicsBase_DestroyVertexLayout(VertexLayoutBase* layout)
+	void graphics_base::DestroyVertexLayout(VertexLayoutBase* layout)
 	{
 		iol_free(layout->vertexAttributes);
 		iol_free(layout->strides);
