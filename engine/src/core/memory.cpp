@@ -132,7 +132,7 @@ namespace iol
 		memory_free(pMemory);
 	}
 
-	void memory::log_allocations()
+	void memory::LogAllocations()
 	{
 		static AllocationInfo s_allocationInfos[MEMORY_MAX_TRACKED_ALLOCATIONS];
 		size_t numAllocations = memory_alloc_info_get_all(s_allocationInfos, iol_countof(s_allocationInfos));

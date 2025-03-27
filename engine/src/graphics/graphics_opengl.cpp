@@ -44,7 +44,7 @@ namespace iol
 		iol_verify(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0) == 0);
 		iol_verify(SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0) == 0);
 
-		m_data = new GraphicsSystemData();
+		m_data = iol_new(GraphicsSystemData);
 		GraphicsSystemData* pSystem = m_data;
 		pSystem->pWindow = (SDL_Window*)param.pWindow;
 		pSystem->glContext = SDL_GL_CreateContext((SDL_Window*)param.pWindow);
@@ -128,7 +128,7 @@ namespace iol
 		ImGui::DestroyContext();
 		
 		SDL_GL_DeleteContext(m_data->glContext);
-		delete m_data;
+		iol_delete(m_data);
 	}
 
 	void GraphicsSystem::HandleEvent(const Event& evt, void* userData)

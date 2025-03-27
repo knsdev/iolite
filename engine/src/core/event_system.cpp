@@ -32,16 +32,17 @@ namespace iol
 	{
 		iol_assert(eventSystem == nullptr);
 
-		eventSystem = new EventSystemData();
+		eventSystem = iol_new(EventSystemData);
 
 		eventSystem->param = param;
 		eventSystem->events.Create(param.maxBufferedEvents);
 
 		eventSystem->listenerMapSize = param.maxEventTypes;
-		eventSystem->listenerMap = new Array<EventListener>[eventSystem->listenerMapSize];
+		eventSystem->listenerMap = iol_new_array(Array<EventListener>, eventSystem->listenerMapSize);
 
 		for (int i = 0; i < eventSystem->listenerMapSize; ++i)
 		{
+			new(&eventSystem->listenerMap[i]) Array<EventListener*>();
 			eventSystem->listenerMap[i].Create(param.maxEventListeners);
 		}
 	}
@@ -55,8 +56,8 @@ namespace iol
 			eventSystem->listenerMap[i].Destroy();
 		}
 
-		delete[] eventSystem->listenerMap;
-		delete eventSystem;
+		iol_delete_array(eventSystem->listenerMap);
+		iol_delete(eventSystem);
 		eventSystem = nullptr;
 	}
 

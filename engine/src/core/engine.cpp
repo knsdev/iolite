@@ -62,11 +62,11 @@ namespace iol
 		graphicsParam.vsync = params.vsync;
 		SDL_GetWindowSize(s_engine.window, (int*)&graphicsParam.screenWidth, (int*)&graphicsParam.screenHeight);
 
-		app->m_graphicsSystem = s_engine.graphicsSystem = new GraphicsSystem();
+		app->m_graphicsSystem = s_engine.graphicsSystem = iol_new(GraphicsSystem);
 
 		if (!s_engine.graphicsSystem->Create(graphicsParam))
 		{
-			delete s_engine.graphicsSystem;
+			iol_delete(s_engine.graphicsSystem);
 			return;
 		}
 
@@ -115,7 +115,7 @@ namespace iol
 
 		input::DestroySystem();
 		s_engine.graphicsSystem->Destroy();
-		delete s_engine.graphicsSystem;
+		iol_delete(s_engine.graphicsSystem);
 		SDL_DestroyWindow(s_engine.window);
 		SDL_Quit();
 		event_system::Destroy();

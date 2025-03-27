@@ -12,9 +12,9 @@ namespace iol
 		vec3 cameraStartPos = vec3(0.0f, 3.0f, 0.0f);
 		vec3 cameraLookDir = vec3(1.0f, -0.5f, -1.0f);
 
-		m_camera = new Camera();
+		m_camera = iol_new(Camera);
 
-		m_cameraFlying = new CameraFlying(&m_camera->transform, cameraStartPos, cameraLookDir);
+		m_cameraFlying = iol_new(CameraFlying, &m_camera->transform, cameraStartPos, cameraLookDir);
 		m_cameraFlying->prop.mouseButtonToRotateCamera = MouseButton_Right;
 		m_cameraFlying->prop.speed = 10.0f;
 
@@ -26,8 +26,8 @@ namespace iol
 	void GameApplication::Destroy()
 	{
 		m_terrainEditor.Destroy(m_graphicsSystem);
-		delete m_cameraFlying;
-		delete m_camera;
+		iol_free(m_cameraFlying);
+		iol_free(m_camera);
 	}
 
 	void GameApplication::FixedUpdate(float deltaTime)

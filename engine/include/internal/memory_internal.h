@@ -17,7 +17,38 @@ namespace iol
 	void             memory_free(void* pMemory);
 	void*            memory_realloc(void* pMemory, size_t newSize);
 
+	template<typename T>
+	void memory_delete(T* pMemory)
+	{
+		pMemory->~T();
+		memory_free(pMemory);
+	}
+
+	template<typename T>
+	T* memory_new_array(size_t count)
+	{
+		size_t* ptr = (size_t*)memory_allocate(sizeof(size_t) + sizeof(T) * count);
+		*ptr = count;
+		ptr++;
+		T* arr = (T*)ptr;
+		return arr;
+	}
+
+	template<typename T>
+	void memory_delete_array(T* arr)
+	{
+		size_t* ptr = (size_t*)arr;
+		ptr--;
+		size_t count = *ptr;
+
+		for (size_t i = 0; i < count; i++)
+			(arr + i)->~T();
+
+		memory_free(ptr);
+	}
+
 #ifndef IOL_MASTER
+
 	struct AllocationInfo
 	{
 		bool slotUsed;
@@ -37,6 +68,29 @@ namespace iol
 	void             memory_alloc_info_remove(const char* pFile, size_t line, void* pMemory);
 	void*            memory_alloc_helper(const char* pFile, size_t line, size_t size);
 	void             memory_free_helper(const char* pFile, size_t line, void* pMemory);
+
+	template<typename T>
+	T* memory_new_array_helper(const char* pFile, size_t line, size_t count)
+	{
+		T* arr = memory_new_array<T>(count);
+		memory_alloc_info_add(pFile, line, arr, sizeof(T) * count);
+		return arr;
+	}
+
+	template<typename T>
+	void memory_delete_array_helper(const char* pFile, size_t line, T* arr)
+	{
+		memory_alloc_info_remove(pFile, line, arr);
+		memory_delete_array(arr);
+	}
+
+	template<typename T>
+	void memory_delete_helper(const char* pFile, size_t line, T* pMemory)
+	{
+		memory_alloc_info_remove(pFile, line, pMemory);
+		memory_delete(pMemory);
+	}
+
 #endif // !IOL_MASTER
 }
 
