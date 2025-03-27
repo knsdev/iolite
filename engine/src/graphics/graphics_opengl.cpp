@@ -412,14 +412,14 @@ namespace iol
 
 	IndexBuffer* GraphicsSystem::CreateIndexBuffer(uint32* pIndices, size_t numIndices, BufferUsage usage)
 	{
-		IndexBuffer* pImpl = iol_alloc(IndexBuffer);
+		IndexBuffer* pBuffer = iol_alloc(IndexBuffer);
 
-		glGenBuffers(1, &pImpl->id);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pImpl->id);
+		glGenBuffers(1, &pBuffer->id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pBuffer->id);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*pIndices) * numIndices, pIndices, gl::ConvertBufferUsage(usage));
-		pImpl->numIndices = numIndices;
+		pBuffer->numIndices = numIndices;
 
-		return pImpl;
+		return pBuffer;
 	}
 
 	void GraphicsSystem::DestroyIndexBuffer(IndexBuffer* pIndexBuffer)
@@ -460,16 +460,16 @@ namespace iol
 	{
 		iol_assert(size % 16 == 0); // buffer data must be 16 bytes aligned
 
-		UniformBuffer* pImpl = iol_alloc(UniformBuffer);
+		UniformBuffer* pBuffer = iol_alloc(UniformBuffer);
 
-		pImpl->pName = pName;
+		pBuffer->pName = pName;
 
-		glGenBuffers(1, &pImpl->id);
-		glBindBuffer(GL_UNIFORM_BUFFER, pImpl->id);
+		glGenBuffers(1, &pBuffer->id);
+		glBindBuffer(GL_UNIFORM_BUFFER, pBuffer->id);
 		glBufferData(GL_UNIFORM_BUFFER, size, pData, gl::ConvertBufferUsage(usage));
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		return pImpl;
+		return pBuffer;
 	}
 
 	void GraphicsSystem::DestroyUniformBuffer(UniformBuffer* pBuffer)
@@ -504,10 +504,10 @@ namespace iol
 
 	VertexLayout* GraphicsSystem::CreateVertexLayout(const Shader* pShader, const VertexAttributeParam* pVertexAttributeParams, size_t numVertexAttributes)
 	{
-		VertexLayout* pImpl = iol_alloc(VertexLayout);
-		graphics_base::CreateVertexLayout(&pImpl->base, pVertexAttributeParams, numVertexAttributes, gl::GetSizeOfVertexType);
+		VertexLayout* pVertexLayout = iol_alloc(VertexLayout);
+		graphics_base::CreateVertexLayout(&pVertexLayout->base, pVertexAttributeParams, numVertexAttributes, gl::GetSizeOfVertexType);
 
-		return pImpl;
+		return pVertexLayout;
 	}
 
 	void GraphicsSystem::DestroyVertexLayout(VertexLayout* pVertexLayout)
@@ -664,9 +664,8 @@ namespace iol
 
 	void GraphicsSystem::DestroyShader(Shader* pShader)
 	{
-		Shader* pImpl = (Shader*)pShader;
-		glDeleteProgram(pImpl->programId);
-		iol_free(pImpl);
+		glDeleteProgram(pShader->programId);
+		iol_free(pShader);
 	}
 
 	Shader* GraphicsSystem::CreateShaderFromFile(const char* pFilePath)
@@ -687,12 +686,12 @@ namespace iol
 		else
 			format = GL_RGBA;
 
-		Texture* pImpl = iol_alloc(Texture);
-		pImpl->width = width;
-		pImpl->height = height;
+		Texture* pTexture = iol_alloc(Texture);
+		pTexture->width = width;
+		pTexture->height = height;
 
-		glGenTextures(1, &pImpl->id);
-		glBindTexture(GL_TEXTURE_2D, pImpl->id);
+		glGenTextures(1, &pTexture->id);
+		glBindTexture(GL_TEXTURE_2D, pTexture->id);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -760,7 +759,7 @@ namespace iol
 		if (param.genMipMaps)
 			glGenerateMipmap(GL_TEXTURE_2D);
 
-		return pImpl;
+		return pTexture;
 	}
 
 	Texture* GraphicsSystem::CreateTextureFromFile(const char* pFilePath, const TextureParam& param)
@@ -809,10 +808,8 @@ namespace iol
 
 	void GraphicsSystem::DestroyTexture(Texture* pTexture)
 	{
-		Texture* pImpl = (Texture*)pTexture;
-
-		glDeleteTextures(1, &pImpl->id);
-		iol_free(pImpl);
+		glDeleteTextures(1, &pTexture->id);
+		iol_free(pTexture);
 	}
 
 	RenderTarget* GraphicsSystem::CreateRenderTarget(uint32 width, uint32 height, RenderTargetFlags flags)

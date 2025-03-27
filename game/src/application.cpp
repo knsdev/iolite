@@ -26,8 +26,8 @@ namespace iol
 	void GameApplication::Destroy()
 	{
 		m_terrainEditor.Destroy(m_graphicsSystem);
-		iol_free(m_cameraFlying);
-		iol_free(m_camera);
+		iol_delete(m_cameraFlying);
+		iol_delete(m_camera);
 	}
 
 	void GameApplication::FixedUpdate(float deltaTime)
