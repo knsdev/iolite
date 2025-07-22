@@ -1,6 +1,6 @@
 # iolite
 
-**iolite** is a simple and lightweight 3D game engine written in C++ with OpenGL. It includes a basic terrain editor, allowing you to create and modify 3D landscapes.  
+A simple and lightweight 3D game engine written in C++ with OpenGL. It includes a basic terrain editor, allowing you to create and modify 3D landscapes.  
 
 ## Features
 
@@ -10,7 +10,7 @@
 - Loading model files (obj), textures (png, jpg), shaders (glsl)
 - Modular and extendable design
 
-This project is a work in progress.  
+This project is a work in progress.
 
 ![terrain_01.png](screenshots/terrain_01.png)
 
